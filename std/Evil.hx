@@ -26,6 +26,10 @@ class Evil {
 			return 123;
 		});
 
+		nativeCall("setup_hook")(function() {
+			return macro 1111;
+		});
+
 		trace(a);
 	}
 }

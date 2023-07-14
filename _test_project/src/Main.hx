@@ -1,3 +1,3 @@
 function main() {
-	trace("Test");
+	trace(|);
 }

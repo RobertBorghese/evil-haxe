@@ -1367,7 +1367,13 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
-and expr = parser
+and expr s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr s in
+	match hook_result with
+	| Some e -> e
+	| None -> expr' s
+
+and expr' = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
 			make_meta name params (secure_expr s) p
