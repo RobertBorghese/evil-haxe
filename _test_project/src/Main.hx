@@ -1,3 +1,3 @@
 function main() {
-	trace(typedef);
+	trace(1 typedef);
 }

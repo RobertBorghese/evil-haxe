@@ -229,6 +229,11 @@ and parse_class_content doc meta flags n p1 s =
 	}, punion p1 p2)
 
 and parse_type_decl mode s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_type_decl (s, mode)) with
+	| Some hook_expr -> hook_expr
+	| None -> parse_type_decl' mode s
+
+and parse_type_decl' mode s =
 	match s with parser
 	| [< '(Kwd Import,p1) >] -> parse_import s p1
 	| [< '(Kwd Using,p1) >] -> parse_using s p1
@@ -937,6 +942,11 @@ and parse_var_field_assignment = parser
 	| [< >] -> serror()
 
 and parse_class_field tdecl s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_class_field (s, tdecl)) with
+	| Some hook_cf -> hook_cf
+	| None -> parse_class_field' tdecl s
+
+and parse_class_field' tdecl s =
 	let doc = get_doc s in
 	let meta = parse_meta s in
 	match s with parser
@@ -1563,7 +1573,10 @@ and expr' = parser
 
 and expr_next e1 s =
 	try
-		expr_next' e1 s
+		let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr_next (s, e1) in
+		match hook_result with
+		| Some e -> e
+		| None -> expr_next' e1 s
 	with Stream.Error msg when !in_display ->
 		handle_stream_error msg s;
 		e1

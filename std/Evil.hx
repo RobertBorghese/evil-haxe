@@ -1,5 +1,7 @@
 package;
 
+#if macro
+
 class Evil {
 	/**
 		This is implemented in OCaml.
@@ -26,7 +28,17 @@ class Evil {
 			return 123;
 		});
 
-		nativeCall("setup_hook")(function(token: evil.TokenStream) {
+		// onExpr(function(token: evil.TokenStream) {
+		// 	return switch(token.peek().token) {
+		// 		case Kwd(Typedef): {
+		// 			token.consume();
+		// 			macro 1111;
+		// 		}
+		// 		case _: null;
+		// 	}
+		// });
+
+		onAfterExpr(function(token: evil.TokenStream, parsedExpr: haxe.macro.Expr) {
 			return switch(token.peek().token) {
 				case Kwd(Typedef): {
 					token.consume();
@@ -38,4 +50,14 @@ class Evil {
 
 		trace(a);
 	}
+
+	public static function onExpr(callback: (evil.TokenStream) -> haxe.macro.Expr) {
+		nativeCall("setup_hook")(evil.HookType.OnExpr, callback);
+	}
+
+	public static function onAfterExpr(callback: (evil.TokenStream, haxe.macro.Expr) -> haxe.macro.Expr) {
+		nativeCall("setup_hook")(evil.HookType.OnAfterExpr, callback);
+	}
 }
+
+#end
