@@ -1,0 +1,3 @@
+-p src
+-main Main
+-js index.js
