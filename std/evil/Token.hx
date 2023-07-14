@@ -3,7 +3,7 @@ package evil;
 enum Token {
 	Eof;
 	Const(c: haxe.macro.Expr.Constant);
-	Kwd;// of keyword
+	Kwd(k: evil.Keyword);
 	Comment(s: String);
 	CommentLine(s: String);
 	Binop(b: haxe.macro.Expr.Binop);

@@ -107,6 +107,7 @@ type enum_type =
 
 	(* EVIL HAXE change *)
 	| IToken
+	| IKeyword
 
 (**
 	Our access to the interpreter from the macro api

@@ -28,7 +28,7 @@ class Evil {
 
 		nativeCall("setup_hook")(function(token: evil.Token) {
 			return switch(token) {
-				case Const(CIdent("blabla")): macro 1111;
+				case Kwd(Typedef): macro 1111;
 				case _: null;
 			}
 		});
