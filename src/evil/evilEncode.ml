@@ -79,3 +79,11 @@ let encode_token (t: Ast.token) =
 		| Spread -> 24, []
 	in
 	Interp.encode_enum IToken tag pl
+
+let encode_type_decl_completion_mode (t: Parser.type_decl_completion_mode) =
+	let tag = match t with
+		| TCBeforePackage -> 0
+		| TCAfterImport -> 1
+		| TCAfterType -> 2
+	in
+	MacroContext.Interp.encode_enum ITypeDeclCompletionMode tag []

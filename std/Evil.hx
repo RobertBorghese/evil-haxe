@@ -48,6 +48,20 @@ class Evil {
 			}
 		});
 
+		// If a module-level identifier of "make_class" is found,
+		// replace it with a class named `Hello`.
+		onTypeDeclaration(function(token: evil.TokenStream, mode: evil.TypeDeclCompletionMode) {
+			return switch(token.peek().token) {
+				case Const(CIdent("make_class")): {
+					token.consume();
+					macro class Hello {
+						public function new() {}
+					}
+				}
+				case _: null;
+			}
+		});
+
 		trace(a);
 	}
 
@@ -57,6 +71,10 @@ class Evil {
 
 	public static function onAfterExpr(callback: (evil.TokenStream, haxe.macro.Expr) -> haxe.macro.Expr) {
 		nativeCall("setup_hook")(evil.HookType.OnAfterExpr, callback);
+	}
+
+	public static function onTypeDeclaration(callback: (evil.TokenStream, evil.TypeDeclCompletionMode) -> haxe.macro.Expr.TypeDefinition) {
+		nativeCall("setup_hook")(evil.HookType.OnTypeDeclaration, callback);
 	}
 }
 

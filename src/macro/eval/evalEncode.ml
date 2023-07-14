@@ -195,6 +195,7 @@ let encode_enum i pos index pl =
 		(* EVIL HAXE change *)
 		| IToken -> key_evil_Token
 		| IKeyword -> key_evil_Keyword
+		| ITypeDeclCompletionMode -> key_evil_TypeDeclCompletionMode
 	in
 	encode_enum_value key index (Array.of_list pl) pos
 

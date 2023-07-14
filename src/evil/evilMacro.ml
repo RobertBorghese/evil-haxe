@@ -41,7 +41,21 @@ let setup_hook (t: EvilParser.hook_type) hx_callback =
 			) in
 			hooks.on_expr_next <- (f :: hooks.on_expr_next)
 		)
-		| OnTypeDeclaration -> () (* on_type_decl *)
+		| OnTypeDeclaration -> (
+			let hxf = EvalMisc.prepare_callback hx_callback 2 in
+			let f = (fun (token_stream, (mode: Parser.type_decl_completion_mode)) ->
+				let ctx = EvalContext.get_ctx() in
+				let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+				let hx_mode = EvilEncode.encode_type_decl_completion_mode mode in
+				let hx_type_decl = hxf [hx_stream; hx_mode] in
+				if hx_type_decl = vnull then None
+				else (
+					let _, def, pos = MacroContext.Interp.decode_type_def hx_type_decl in
+					Some (def, pos)
+				)
+			) in
+			hooks.on_type_decl <- (f :: hooks.on_type_decl)
+		)
 		| OnClassField -> () (* on_class_field *)
 
 (**

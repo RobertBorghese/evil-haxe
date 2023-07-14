@@ -128,6 +128,7 @@ let key_haxe_macro_StringLiteralKind = hash "haxe.macro.StringLiteralKind"
 (* EVIL HAXE change *)
 let key_evil_Token = hash "evil.Token"
 let key_evil_Keyword = hash "evil.Keyword"
+let key_evil_TypeDeclCompletionMode = hash "evil.TypeDeclCompletionMode"
 
 let key___init__ = hash "__init__"
 let key_new = hash "new"
