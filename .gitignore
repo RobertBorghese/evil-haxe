@@ -6,7 +6,6 @@
 *.cmo
 *.cmt
 *.a
-*.exe
 .*.swp
 .haxelib
 /out
@@ -26,7 +25,6 @@
 
 /src/version.ml
 /haxe
-/haxelib*
 /haxedoc*
 /lib
 /prebuild
