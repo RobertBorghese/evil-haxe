@@ -26,8 +26,11 @@ class Evil {
 			return 123;
 		});
 
-		nativeCall("setup_hook")(function() {
-			return macro 1111;
+		nativeCall("setup_hook")(function(token: evil.Token) {
+			return switch(token) {
+				case Const(CIdent("blabla")): macro 1111;
+				case _: null;
+			}
 		});
 
 		trace(a);

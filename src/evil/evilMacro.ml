@@ -2,12 +2,7 @@ open EvalValue
 open EvalEncode
 open EvalDecode
 
-(**
-	Stores global variables for processing macros.
-**)
-module EvilGlobalState = struct
-	let macro_lib : (string,value) Hashtbl.t = Hashtbl.create 0
-end
+open EvilGlobals
 
 (**
 	Given a `name` and an instance of `VFunction`, adds a
@@ -28,13 +23,19 @@ let setup_macro_functions =
 
 	add_macro_function "setup_hook" (
 		vfun1 (fun callback ->
-			let hxf = EvalMisc.prepare_callback callback 0 in
+			let hxf = EvalMisc.prepare_callback callback 1 in
 			let f = (fun token_stream ->
-				match Stream.peek token_stream with
-				| Some (Ast.Binop OpOr, or_pos) -> (
-					Stream.junk token_stream;
+				let t = Stream.peek token_stream in
+				match t with
+				| Some (token, token_pos) -> (
 					let ctx = EvalContext.get_ctx() in
-					Some (ctx.curapi.MacroApi.decode_expr (hxf []))
+					let hxexpr = hxf [(EvilEncode.encode_token token)] in
+					if hxexpr = VNull then (
+						None
+					) else (
+						Stream.junk token_stream;
+						Some (ctx.curapi.MacroApi.decode_expr hxexpr)
+					)
 				)
 				| _ ->
 					None
@@ -50,3 +51,4 @@ let setup_macro_functions =
 			f [encode_string "string from ocaml"]
 		)
 	)
+

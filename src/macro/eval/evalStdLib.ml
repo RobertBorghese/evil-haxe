@@ -3843,7 +3843,7 @@ let init_standard_library builtins =
 	init_fields builtins ([],"Evil") [
 		"nativeCall",vfun1 (fun f ->
 			let f = decode_string f in
-			Hashtbl.find EvilMacro.EvilGlobalState.macro_lib f
+			Hashtbl.find EvilGlobals.EvilGlobalState.macro_lib f
 		)
 	] [];
 

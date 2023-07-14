@@ -191,6 +191,9 @@ let encode_enum i pos index pl =
 		| IMessage -> key_haxe_macro_Message
 		| IFunctionKind -> key_haxe_macro_FunctionKind
 		| IStringLiteralKind -> key_haxe_macro_StringLiteralKind
+
+		(* EVIL HAXE change *)
+		| IToken -> key_evil_Token
 	in
 	encode_enum_value key index (Array.of_list pl) pos
 

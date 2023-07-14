@@ -124,6 +124,10 @@ let key_haxe_macro_PackageRule = hash "haxe.macro.PackageRule"
 let key_haxe_macro_Message = hash "haxe.macro.Message"
 let key_haxe_macro_FunctionKind = hash "haxe.macro.FunctionKind"
 let key_haxe_macro_StringLiteralKind = hash "haxe.macro.StringLiteralKind"
+
+(* EVIL HAXE change *)
+let key_evil_Token = hash "evil.Token"
+
 let key___init__ = hash "__init__"
 let key_new = hash "new"
 let key_questionmark = hash "?"
