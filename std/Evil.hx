@@ -26,9 +26,12 @@ class Evil {
 			return 123;
 		});
 
-		nativeCall("setup_hook")(function(token: evil.Token) {
-			return switch(token) {
-				case Kwd(Typedef): macro 1111;
+		nativeCall("setup_hook")(function(token: evil.TokenStream) {
+			return switch(token.peek().token) {
+				case Kwd(Typedef): {
+					token.consume();
+					macro 1111;
+				}
 				case _: null;
 			}
 		});

@@ -25,20 +25,11 @@ let setup_macro_functions =
 		vfun1 (fun callback ->
 			let hxf = EvalMisc.prepare_callback callback 1 in
 			let f = (fun token_stream ->
-				let t = Stream.peek token_stream in
-				match t with
-				| Some (token, token_pos) -> (
-					let ctx = EvalContext.get_ctx() in
-					let hxexpr = hxf [(EvilEncode.encode_token token)] in
-					if hxexpr = VNull then (
-						None
-					) else (
-						Stream.junk token_stream;
-						Some (ctx.curapi.MacroApi.decode_expr hxexpr)
-					)
-				)
-				| _ ->
-					None
+				let ctx = EvalContext.get_ctx() in
+				let hxstream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+				let hxexpr = hxf [hxstream] in
+				if hxexpr = vnull then None
+				else Some (ctx.curapi.MacroApi.decode_expr hxexpr)
 			) in
 			EvilParser.hooks.on_expr <- (f :: EvilParser.hooks.on_expr);
 			vnull
