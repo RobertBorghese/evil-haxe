@@ -1,6 +1,4 @@
-let on_compile com call_light_init_macro =
-	begin try
-		Some (call_light_init_macro com "Evil.init()")
-	with (Error.Error { err_message = Module_not_found (["Bla"],"Init") }) ->
-		None
-	end
+let on_compile_start com call_light_init_macro =
+	let _ = call_light_init_macro com "Evil.init()" in
+	EvilMacro.setup_macro_functions;
+	()

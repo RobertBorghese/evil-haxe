@@ -3838,4 +3838,13 @@ let init_standard_library builtins =
 	init_fields builtins (["eval";"luv";"_Prepare"], "Prepare_Impl_") EvalLuv.prepare_fields [];
 	init_fields builtins (["eval";"luv";"_Check"], "Check_Impl_") EvalLuv.check_fields [];
 	init_fields builtins (["eval";"luv"], "Version") EvalLuv.version_fields [];
+
+	(* EVIL HAXE change *)
+	init_fields builtins ([],"Evil") [
+		"nativeCall",vfun1 (fun f ->
+			let f = decode_string f in
+			Hashtbl.find EvilMacro.EvilGlobalState.macro_lib f
+		)
+	] [];
+
 	EvalSsl.init_fields init_fields builtins
