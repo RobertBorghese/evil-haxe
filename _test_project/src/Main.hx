@@ -1,4 +1,8 @@
-#evil
+// Let the Haxe compiler know this module wants to use Evil Haxe mods.
+// The only mod this module is using is the "pipe" mod.
+#evil(pipe)
+
+package;
 
 function main() {
 	"test" |> repeat(3) |> trace;

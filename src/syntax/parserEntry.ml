@@ -297,16 +297,9 @@ let parse entry ctx code file =
 			next_token();
 		| Sharp s ->
 			(* EVIL HAXE change *)
-			let module_attributes = EvilGlobals.EvilGlobalState.module_attributes in
-			if Hashtbl.mem module_attributes s then (
-				let attribute_func = Hashtbl.find module_attributes s in
-				let t = attribute_func() in
-				if Option.is_some t then
-					Option.get t, snd tk
-				else
-					next_token()
-			) else
-				sharp_error s (pos tk)
+			let t = EvilParserEntry.check_sharp tk s (Path.UniqueKey.create file) next_token in
+			if Option.is_some t then Option.get t
+			else sharp_error s (pos tk)
 		| _ ->
 			tk
 

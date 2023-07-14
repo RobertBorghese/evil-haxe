@@ -3,13 +3,31 @@ open EvilParser
 
 open Ast
 
-let parse_evil_header s =
+(**
+	Parse the arguments after `#evil`.
+**)
+let parse_module_attribute_args parse_call_params s =
 	match Stream.peek s with
-		| Some (Sharp ("evil"), p) -> (
+		| Some (POpen, p) -> (
 			Stream.junk s;
-			true
+			let e,_ = parse_call_params (fun el p2 -> (EBlock(el)),p2) p s in
+			match e with
+				| EBlock(el) -> el
+				| _ -> raise Not_found
 		)
-		| _ -> false
+		| _ -> []
+
+(**
+	If the file starts with `#evil`, the file is returned.
+	None otherwise.
+**)
+let parse_evil_header parse_call_params s =
+	match Stream.peek s with
+		| Some (Sharp ("evil"), (p: Globals.pos)) -> (
+			Stream.junk s;
+			Some (parse_module_attribute_args parse_call_params s, p.pfile)
+		)
+		| _ -> None
 
 let clear_hooks () =
 	if hooks.has_mods = true then (
@@ -20,7 +38,7 @@ let clear_hooks () =
 		hooks.has_mods <- false; 
 	)
 
-let install_mod name =
+let install_mod (name,pos) =
 	if Hashtbl.mem EvilGlobalState.mods name then (
 		let parser_mod = Hashtbl.find EvilGlobalState.mods name in
 
@@ -38,12 +56,25 @@ let install_mod name =
 			List.length hooks.on_type_decl > 0 &&
 			List.length hooks.on_class_field > 0
 		) then hooks.has_mods <- true;
+	) else (
+		let msg = Printf.sprintf "Unknown Evil Haxe mod \"%s\"" name in
+		Parser.error (Custom msg) pos;
 	)
 
-let on_parse_file_start s =
-	let setup_hooks = parse_evil_header s in
+let on_parse_file_start parse_call_params s =
+	let evil_attribute = parse_evil_header parse_call_params s in
 
 	clear_hooks();
 
-	if setup_hooks then
-		List.iter install_mod hooks.defaults
+	if Option.is_some evil_attribute then
+		let args,file = Option.get evil_attribute in
+		(* let key = Path.UniqueKey.create file in *)
+		(* List.iter (fun a -> print_endline (Ast.Printer.s_expr a)) args; *)
+
+		let mods = if List.length args == 0 then
+			List.map (fun (s: string) -> s,Globals.null_pos) hooks.defaults
+		else
+			List.map (fun (e: Ast.expr) -> Ast.Printer.s_expr e,snd e) args
+		in
+
+		List.iter install_mod mods
