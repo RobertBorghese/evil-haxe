@@ -123,7 +123,7 @@ let parsing_macro_cond = ref false
 
 let rec	parse_file s =
 	(* EVIL HAXE change *)
-	EvilGrammar.on_parse_file_start ();
+	EvilGrammar.on_parse_file_start s;
 
 	last_doc := None;
 	match s with parser

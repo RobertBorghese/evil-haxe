@@ -1,3 +1,5 @@
+#evil
+
 function main() {
 	"test" |> repeat(3) |> trace;
 }

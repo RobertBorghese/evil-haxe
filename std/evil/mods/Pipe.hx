@@ -9,7 +9,6 @@ var pipeForwardMetaName = "--pipe";
 	Initializes the Pipe mod.
 **/
 function init() {
-	trace('fdjsklfds');
 	Evil.addParserMod("pipe", {
 		onAfterExpr: onAfterExpr
 	});

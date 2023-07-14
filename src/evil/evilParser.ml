@@ -32,6 +32,8 @@ let rec call_hooks hook params =
 	TODO: Remove?
 **)
 type global_parser_hooks = {
+	mutable has_mods : bool;
+	mutable defaults : string list;
 	mutable on_expr : (token_stream -> (Ast.expr option)) list;
 	mutable on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
 	mutable on_type_decl : ((token_stream * Parser.type_decl_completion_mode) -> (Ast.type_decl option)) list;
@@ -42,6 +44,8 @@ type global_parser_hooks = {
 	Global variable for global hooks.
 **)
 let hooks : global_parser_hooks = {
+	has_mods = false;
+	defaults = ["pipe"];
 	on_expr = [];
 	on_expr_next = [];
 	on_type_decl = [];
