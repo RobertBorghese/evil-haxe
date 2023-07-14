@@ -1,5 +1,8 @@
-package evil;
+package evil.macro;
 
+/**
+	Exposes the `Ast.keyword` enum from the Haxe compiler.
+**/
 enum Keyword {
 	Function;
 	Class;

@@ -193,9 +193,9 @@ let encode_enum i pos index pl =
 		| IStringLiteralKind -> key_haxe_macro_StringLiteralKind
 
 		(* EVIL HAXE change *)
-		| IToken -> key_evil_Token
-		| IKeyword -> key_evil_Keyword
-		| ITypeDeclCompletionMode -> key_evil_TypeDeclCompletionMode
+		| IToken -> key_evil_macro_Token
+		| IKeyword -> key_evil_macro_Keyword
+		| ITypeDeclCompletionMode -> key_evil_macro_TypeDeclCompletionMode
 	in
 	encode_enum_value key index (Array.of_list pl) pos
 

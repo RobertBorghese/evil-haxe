@@ -1,14 +1,11 @@
-make_class
-
-class Bla {
-	public function new() {}
-	make_field
+function main() {
+	"test" |> repeat(3) |> trace;
 }
 
-function main() {
-	trace(1 typedef);
-	trace(new Hello());
-	
-	final b = new Bla();
-	b.bla();
+function repeat(number: Int, s: String): String {
+	var result = "";
+	for(i in 0...number) {
+		result += s;
+	}
+	return result;
 }

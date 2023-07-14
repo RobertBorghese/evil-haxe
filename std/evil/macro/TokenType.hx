@@ -1,9 +1,12 @@
-package evil;
+package evil.macro;
 
+/**
+	Exposes the `Ast.token` enum from the Haxe compiler.
+**/
 enum TokenType {
 	Eof;
 	Const(c: haxe.macro.Expr.Constant);
-	Kwd(k: evil.Keyword);
+	Kwd(k: evil.macro.Keyword);
 	Comment(s: String);
 	CommentLine(s: String);
 	Binop(b: haxe.macro.Expr.Binop);

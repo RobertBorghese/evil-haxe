@@ -50,7 +50,6 @@ let encode_keyword (k: Ast.keyword) =
 
 let encode_token (t: Ast.token) =
 	let open MacroContext in
-	let ctx = EvalContext.get_ctx() in
 	let tag, pl = match t with
 		| Eof -> 0, []
 		| Const (c: Ast.constant) -> 1, [Interp.encode_const c]
