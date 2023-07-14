@@ -328,6 +328,10 @@ let compile ctx actx callbacks =
 		| _ ->
 			None
 		in
+
+	(* EVIL HAXE change *)
+	let _ = Evil.on_compile com call_light_init_macro in
+
 	(* Initialize target: This allows access to the appropriate std packages and sets the -D defines. *)
 	let ext = Setup.initialize_target ctx com actx in
 	update_platform_config com; (* make sure to adapt all flags changes defined after platform *)
