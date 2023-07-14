@@ -44,7 +44,6 @@ let setup_hook (t: EvilParser.hook_type) hx_callback =
 		| OnTypeDeclaration -> (
 			let hxf = EvalMisc.prepare_callback hx_callback 2 in
 			let f = (fun (token_stream, (mode: Parser.type_decl_completion_mode)) ->
-				let ctx = EvalContext.get_ctx() in
 				let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
 				let hx_mode = EvilEncode.encode_type_decl_completion_mode mode in
 				let hx_type_decl = hxf [hx_stream; hx_mode] in
@@ -56,7 +55,16 @@ let setup_hook (t: EvilParser.hook_type) hx_callback =
 			) in
 			hooks.on_type_decl <- (f :: hooks.on_type_decl)
 		)
-		| OnClassField -> () (* on_class_field *)
+		| OnClassField -> (
+			let hxf = EvalMisc.prepare_callback hx_callback 2 in
+			let f = (fun (token_stream, (is_module_level: bool)) ->
+				let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+				let hx_field = hxf [hx_stream; vbool is_module_level] in
+				if hx_field = vnull then None
+				else Some (MacroContext.Interp.decode_field hx_field)
+			) in
+			hooks.on_class_field <- (f :: hooks.on_class_field)
+		)
 
 (**
 	Sets up all the functions callable using `Eval.nativeCall`.

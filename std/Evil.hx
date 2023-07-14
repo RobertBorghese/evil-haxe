@@ -62,6 +62,21 @@ class Evil {
 			}
 		});
 
+		onClassField(function(token: evil.TokenStream, is_module_level: Bool) {
+			return switch(token.peek().token) {
+				case Const(CIdent("make_field")): {
+					token.consume();
+					final typeDef = macro class Hello {
+						public function bla() {
+							trace("called bla");
+						}
+					}
+					typeDef.fields[0];
+				}
+				case _: null;
+			}
+		});
+
 		trace(a);
 	}
 
@@ -75,6 +90,10 @@ class Evil {
 
 	public static function onTypeDeclaration(callback: (evil.TokenStream, evil.TypeDeclCompletionMode) -> haxe.macro.Expr.TypeDefinition) {
 		nativeCall("setup_hook")(evil.HookType.OnTypeDeclaration, callback);
+	}
+
+	public static function onClassField(callback: (evil.TokenStream, Bool) -> haxe.macro.Expr.Field) {
+		nativeCall("setup_hook")(evil.HookType.OnClassField, callback);
 	}
 }
 
