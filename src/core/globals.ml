@@ -106,11 +106,13 @@ let s_version =
 	let pre = Option.map_default (fun pre -> "-" ^ pre) "" version_pre in
 	Printf.sprintf "%d.%d.%d%s" version_major version_minor version_revision pre
 
-let s_version_full =
+let s_version_full' =
 	match Version.version_extra with
 		| Some (_,build) -> s_version ^ "+" ^ build
 		| _ -> s_version
 
+(* EVIL HAXE change *)
+let s_version_full = s_version_full' ^ "-EVIL"
 
 let patch_string_pos p s = { p with pmin = p.pmax - String.length s }
 

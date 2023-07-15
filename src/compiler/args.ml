@@ -18,6 +18,10 @@ let usage_string ?(print_cat=true) arg_spec usage =
 	let make_label = fun names hint -> Printf.sprintf "%s %s" (String.concat ", " names) hint in
 	let args = (List.filter (fun (cat, ok, dep, spec, hint, doc) -> (List.length ok) > 0) arg_spec) in
 	let cat_order = ["Target";"Compilation";"Optimization";"Debug";"Batch";"Services";"Compilation Server";"Target-specific";"Miscellaneous"] in
+
+	(* EVIL HAXE change *)
+	let cat_order = "Evil" :: cat_order in
+
 	let cats = List.filter (fun x -> List.mem x (List.map (fun (cat, _, _, _, _, _) -> cat) args)) cat_order in
 	let max_length = List.fold_left max 0 (List.map String.length (List.map (fun (_, ok, _, _, hint, _) -> make_label ok hint) args)) in
 	usage ^ (String.concat "\n" (List.flatten (List.map (fun cat -> (if print_cat then ["\n"^cat^":"] else []) @ (List.map (fun (cat, ok, dep, spec, hint, doc) ->
@@ -66,6 +70,14 @@ let parse_args com =
 	in
 	let add_native_lib file extern = actx.native_libs <- (file,extern) :: actx.native_libs in
 	let basic_args_spec = [
+		(* EVIL HAXE change *)
+		("Evil",["--default-mods"],["-dmods"],Arg.String (fun mods ->
+			EvilArgs.set_default_mods mods;
+		),"<mod1,mod2,...>","set the Evil Haxe mods used by default");
+		("Evil",["--conspire"],[],Arg.String (fun hxpath ->
+			EvilArgs.add_conspire hxpath;
+		),"<mod1,mod2,...>","run function to register mods");
+
 		("Target",["--js"],["-js"],Arg.String (set_platform com Js),"<file>","generate JavaScript code into target file");
 		("Target",["--lua"],["-lua"],Arg.String (set_platform com Lua),"<file>","generate Lua code into target file");
 		("Target",["--swf"],["-swf"],Arg.String (set_platform com Flash),"<file>","generate Flash SWF bytecode into target file");

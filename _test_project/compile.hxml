@@ -1,3 +1,5 @@
 -p src
 -main Main
 -js index.js
+
+--conspire Mod.init()
