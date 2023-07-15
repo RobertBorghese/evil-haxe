@@ -215,6 +215,10 @@ module Setup = struct
 		Common.define_value com Define.Haxe s_version;
 		Common.raw_define com "true";
 		Common.define_value com Define.Dce "std";
+
+		(* EVIL HAXE change *)
+		Common.raw_define com "evilhaxe";
+
 		com.info <- (fun ?(depth=0) ?(from_macro=false) msg p ->
 			message ctx (make_compiler_message ~from_macro msg p depth DKCompilerMessage Information)
 		);

@@ -2,6 +2,10 @@ package;
 
 #if macro
 
+#if !evilhaxe
+#error "Evil Haxe std is being used with normal Haxe."
+#end
+
 import evil.macro.*;
 import haxe.macro.Expr;
 
