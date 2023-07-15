@@ -231,6 +231,7 @@ and parse_class_content doc meta flags n p1 s =
 		d_data = fl;
 	}, punion p1 p2)
 
+(* EVIL HAXE change *)
 and parse_type_decl mode s =
 	match (EvilParser.call_hooks EvilParser.hooks.on_type_decl (s, mode)) with
 	| Some hook_expr -> hook_expr
@@ -944,6 +945,7 @@ and parse_var_field_assignment = parser
 	| [< p2 = semicolon >] -> None , p2
 	| [< >] -> serror()
 
+(* EVIL HAXE change *)
 and parse_class_field tdecl s =
 	match (EvilParser.call_hooks EvilParser.hooks.on_class_field (s, tdecl)) with
 	| Some hook_cf -> hook_cf
@@ -1380,6 +1382,7 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
+(* EVIL HAXE change *)
 and expr s =
 	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr s in
 	match hook_result with
@@ -1574,6 +1577,7 @@ and expr' = parser
 	| [< '(Dollar v,p); s >] -> expr_next (EConst (Ident ("$"^v)),p) s
 	| [< '(Kwd Inline,p); e = secure_expr >] -> make_meta Meta.Inline [] e p
 
+(* EVIL HAXE change *)
 and expr_next e1 s =
 	try
 		let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr_next (s, e1) in
