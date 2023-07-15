@@ -14,10 +14,9 @@ function main() {
 		i *= 2;
 		if(i > 20) {
 			break;
-		} else {
-			trace(i);
 		}
 	}
+	trace(i);
 }
 
 function repeat(number: Int, s: String): String {
