@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://haxe.org/" title="haxe.org"><img src="extra/images/Readme.png" /></a>
+	<a href="https://haxe.org/" title="haxe.org"><img src="extra/images/Readme.png" /></a>
 </p>
 
 <p align="center">
@@ -20,20 +20,20 @@ import evil.macro.TokenStream;
 // This is called using the new compiler argument:
 // --conspire Mod.init()
 function init() {
-	Evil.addParserMod("loop_mod", {
-		onExpr: function(stream: TokenStream): Null<haxe.macro.Expr> {
-			return switch(stream.peek().token) {
-				case Const(CIdent("loop")): {
-					stream.consume();
-					final expr = stream.nextExpr();
-					macro while(true) $expr;
-				}
-				case _: {
-					null;
-				}
-			}
-		}
-	});
+    Evil.addParserMod("loop_mod", {
+        onExpr: function(stream: TokenStream): Null<haxe.macro.Expr> {
+            return switch(stream.peek().token) {
+                case Const(CIdent("loop")): {
+                    stream.consume();
+                    final expr = stream.nextExpr();
+                    macro while(true) $expr;
+                }
+                case _: {
+                    null;
+                }
+            }
+        }
+    });
 }
 ```
 #### Main.hx
@@ -45,15 +45,15 @@ function init() {
 package;
 
 function main() {
-	// New "loop" feature created by "loop_mod".
-	var i = 1;
-	loop {
-		i *= 2;
-		if(i > 20) {
-			break;
-		}
-	}
-	trace(i);
+    // New "loop" feature created by "loop_mod".
+    var i = 1;
+    loop {
+        i *= 2;
+        if(i > 20) {
+            break;
+        }
+    }
+    trace(i);
 }
 ```
 
@@ -97,8 +97,8 @@ Within this function, mods can be registered using `Evil.addParserMod`. The firs
 ```haxe
 // This mod would be enabled with: #evil(my_mod)
 function init() {
-	var options = { ... };
-	Evil.addParserMod("my_mod", options);
+    var options = { ... };
+    Evil.addParserMod("my_mod", options);
 }
 ```
 The `options` object should be a structure matching the `evil.macro.Mod` typedef. All of its fields are optional callbacks that will execute at certain points of source code parsing.
@@ -106,10 +106,10 @@ The `options` object should be a structure matching the `evil.macro.Mod` typedef
 For example, `onExpr` will execute whenever the compiler wants to parse an expression. It will first run all the `onExpr` functions provided by the enabled mods. The first to return a non-null `Expr` will have its return used instead of whatever would've been parsed normally. If all the mod functions return `null`, the compiler continues to parse the expression like normal.
 ```haxe
 typedef Mod = {
-	?onExpr: (TokenStream) -> Null<Expr>,
-	?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
-	?onTypeDeclaration: (TokenStream, TypeDeclCompletionMode) -> Null<TypeDefinition>,
-	?onClassField: (TokenStream, Bool) -> Null<Field>
+    ?onExpr: (TokenStream) -> Null<Expr>,
+    ?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
+    ?onTypeDeclaration: (TokenStream, TypeDeclCompletionMode) -> Null<TypeDefinition>,
+    ?onClassField: (TokenStream, Bool) -> Null<Field>
 }
 ```
 
