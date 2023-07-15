@@ -57,6 +57,10 @@ function main() {
 }
 ```
 
+&nbsp;
+&nbsp;
+&nbsp;
+
 # About
 
 The old version of Evil Haxe was an [opinionated edit of the Haxe compiler](https://github.com/SumRndmDde/evil-haxe) I made about a year ago. It's a superset of Haxe that is created to add as many modern and cool features the language can possibly contain without completely breaking compatibility with vanilla Haxe. It was summoned from an alternative universe using a demonic ritual, and it continues to eat away at my soul from the darkest depths of our world.
@@ -69,14 +73,22 @@ Long story short, version 1.0 was just a collection of Haxe mods I made for fun.
 
 Anyway, just setting this repo up to work on whenever I'm bored. Feel free to make requests in the Issues.
 
+&nbsp;
+&nbsp;
+&nbsp;
+
 # Installation
 Please visit [BUILDING](https://github.com/HaxeFoundation/haxe/blob/development/extra/BUILDING.md) to learn how to compile the Haxe compiler. The process is identical for Evil Haxe.
 
 However, if this is too much work, I'm also committing the Windows builds I'm testing into the repo. To install:
 1) Download the latest nightly of Haxe and install (or use an existing installation).
-2) Download evil_haxe.zip.
+2) Download [evil_haxe.zip](evil_haxe.zip).
 3) Extract the contents of evil_haxe.zip and paste into the Haxe installation folder (`std/` folder should be merged).
 4) Run the `evil_haxe` executable like you would with the Haxe compiler normally.
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 # Evil Haxe Rules
 Every Haxe module that wants to use Evil Haxe mods must use `#evil` at the top of the file. This should be placed above everything, including `package`.
@@ -89,6 +101,10 @@ Otherwise, the mods used by the Haxe file can be specified by the `#evil` statem
 ```
 #evil(loop, pipe)
 ```
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 # Creating Mods
 To create a parser mod, make a new Haxe module with a static function. Call this function using the new `--conspire` argument in the Evil Haxe compiler. This will run the function at an extremely early point in compilation, before initialization macros are even run!
@@ -113,11 +129,15 @@ typedef Mod = {
 }
 ```
 
+&nbsp;
+&nbsp;
+&nbsp;
+
 # Built-in Mods
-Evil Haxe also contains pre-existing mods. These can be found in the standard library at `evil/mods`.
+Evil Haxe also contains pre-existing mods. These can be found in the standard library at `std/evil/mods`.
 
 ### Pipe
 This mod enables the pipe operator similar to what's seen in many functional languages:
-```
+```haxe
 2 |> Math.pow(5) |> trace; // 25
 ```
