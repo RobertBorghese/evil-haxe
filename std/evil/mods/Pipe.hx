@@ -1,5 +1,7 @@
 package evil.mods;
 
+#if (macro || display)
+
 import haxe.macro.Expr;
 import evil.macro.TokenStream;
 
@@ -100,3 +102,5 @@ function makePipeExpr(e1: Expr, e2: Expr): Expr {
 		}
 	}
 }
+
+#end
