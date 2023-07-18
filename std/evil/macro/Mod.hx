@@ -9,7 +9,7 @@ import evil.macro.TokenStream;
 	at certain points.
 **/
 typedef Mod = {
-	?onExpr: (TokenStream) -> haxe.macro.Expr,
+	?onExpr: (TokenStream, Bool) -> haxe.macro.Expr,
 	?onAfterExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,
 	?onBlockExpr: (TokenStream) -> Void,
 	?onAfterBlockExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,

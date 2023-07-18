@@ -9,7 +9,7 @@ function init() {
 	});
 }
 
-function parseExpr(tokenStream: evil.macro.TokenStream): Null<haxe.macro.Expr> {
+function parseExpr(tokenStream: evil.macro.TokenStream, isTopLevel: Bool): Null<haxe.macro.Expr> {
 	// Check the current token...
 	return switch(tokenStream.peek().token) {
 

@@ -18,10 +18,10 @@ let add_macro_function name func =
 **)
 let encode_on_expr_callback (hx_callback: EvalValue.value) = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
-	(fun (token_stream: EvilParser.token_stream) ->
+	(fun ((token_stream: EvilParser.token_stream), (top_level: bool)) ->
 		let ctx = EvalContext.get_ctx() in
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
-		let hx_expr = hxf [hx_stream] in
+		let hx_expr = hxf [hx_stream; vbool top_level] in
 		if hx_expr = vnull then None
 		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
 	)

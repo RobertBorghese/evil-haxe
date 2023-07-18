@@ -1202,7 +1202,7 @@ and parse_block_elt = parser
 			| [< >] -> ()
 		end;
 		e
-	| [< e = expr; _ = semicolon >] -> e
+	| [< e = (* EVIL HAXE change *) top_expr; _ = semicolon >] -> e
 
 and parse_obj_decl name e p0 s =
 	let make_obj_decl el p1 =
@@ -1395,7 +1395,13 @@ and arrow_first_param e s =
 
 (* EVIL HAXE change *)
 and expr s =
-	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr s in
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr (s, false) in
+	match hook_result with
+	| Some e -> e
+	| None -> expr' s
+
+and top_expr s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr (s, true) in
 	match hook_result with
 	| Some e -> e
 	| None -> expr' s

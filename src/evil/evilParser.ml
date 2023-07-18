@@ -40,7 +40,7 @@ type global_parser_hooks = {
 	mutable has_mods : bool;
 	mutable defaults : string list;
 	mutable conspiracies : string list;
-	mutable on_expr : (token_stream -> (Ast.expr option)) list;
+	mutable on_expr : ((token_stream * bool) -> (Ast.expr option)) list;
 	mutable on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
 	mutable on_block : (token_stream -> unit) list;
 	mutable on_block_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
@@ -69,7 +69,7 @@ let hooks : global_parser_hooks = {
 	The type for an instance of a parser mod.
 **)
 type parser_mod = {
-	on_expr : (token_stream -> (Ast.expr option)) option;
+	on_expr : ((token_stream * bool) -> (Ast.expr option)) option;
 	on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) option;
 	on_block : (token_stream -> unit) option;
 	on_block_next : ((token_stream * Ast.expr) -> (Ast.expr option)) option;
