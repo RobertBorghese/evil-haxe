@@ -39,7 +39,7 @@ class Evil {
 		Add a quick parser mod callback for the `OnExpr` hook.
 		Applied globally to all Evil Haxe modules.
 	**/
-	public static function onExpr(callback: (TokenStream) -> Expr) {
+	public static function onExpr(callback: (TokenStream, Bool) -> Expr) {
 		nativeCall("setup_hook")(HookType.OnExpr, callback);
 	}
 

@@ -1117,10 +1117,18 @@ and parse_class_herit = parser
 	| [< '(Kwd Extends,p1); t,_ = parse_type_path_or_resume p1 >] -> HExtends t
 	| [< '(Kwd Implements,p1); t,_ = parse_type_path_or_resume p1 >] -> HImplements t
 
+(* EVIL HAXE change *)
+and on_block_start s =
+	EvilParser.call_hooks_unit EvilParser.hooks.on_block s;
+
+and on_block1_parse_block s =
+	on_block_start s;
+	block [] s
+
 and block1 = parser
 	| [< name,p = dollar_ident; s >] -> block2 (name,p,NoQuotes) (Ident name) p s
 	| [< '(Const (String(name,qs)),p); s >] -> block2 (name,p,DoubleQuotes) (String(name,qs)) p s (* STRINGTODO: qs... hmm *)
-	| [< b = block [] >] -> EBlock b
+	| [< b = (* EVIL HAXE change *) on_block1_parse_block >] -> EBlock b
 
 and block2 name ident p s =
 	match s with parser
@@ -1128,6 +1136,9 @@ and block2 name ident p s =
 		let e = secure_expr s in
 		fst (parse_obj_decl name e p s)
 	| [< >] ->
+		(* EVIL HAXE change *)
+		on_block_start s;
+
 		let f s =
 			let e = expr_next (EConst ident,p) s in
 			let _ = semicolon s in
@@ -1412,6 +1423,14 @@ and expr' = parser
 			let e = (b,punion p1 p2) in
 			(match b with
 			| EObjectDecl _ -> expr_next e s
+
+			(* EVIL HAXE change *)
+			| EBlock _ -> (
+				match (EvilParser.call_hooks EvilParser.hooks.on_block_next (s, e)) with
+				| Some hook_expr -> hook_expr
+				| None -> e
+			)
+			
 			| _ -> e)
 		| [< >] ->
 			check_resume p1 (fun() -> (EDisplay ((EObjectDecl [],p1),DKStructure),p1)) serror;

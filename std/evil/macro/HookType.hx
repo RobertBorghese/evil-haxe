@@ -6,6 +6,8 @@ package evil.macro;
 enum HookType {
 	OnExpr;
 	OnAfterExpr;
+	OnBlockExpr;
+	OnAfterBlockExpr;
 	OnTypeDeclaration;
 	OnClassField;
 }

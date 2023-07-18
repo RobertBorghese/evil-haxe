@@ -42,6 +42,29 @@ let encode_on_after_expr_callback hx_callback = (
 	)
 )
 
+let encode_on_block_start_callback hx_callback = (
+	let hxf = EvalMisc.prepare_callback hx_callback 1 in
+	(fun (token_stream) ->
+		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+		ignore (hxf [hx_stream]);
+	)
+)
+
+(**
+	Converts a Haxe callback into an OnAfterBlockExpr hook-callable function.
+**)
+let encode_on_block_expr_callback hx_callback = (
+	let hxf = EvalMisc.prepare_callback hx_callback 2 in
+	(fun (token_stream, (expr: Ast.expr)) ->
+		let ctx = EvalContext.get_ctx() in
+		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+		let expr_arg = ctx.curapi.MacroApi.encode_expr expr in
+		let hx_expr = hxf [hx_stream; expr_arg] in
+		if hx_expr = vnull then None
+		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+	)
+)
+
 (**
 	Converts a Haxe callback into an OnTypeDecl hook-callable function.
 **)
@@ -87,6 +110,14 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 			let f = encode_on_after_expr_callback hx_callback in
 			hooks.on_expr_next <- (f :: hooks.on_expr_next)
 		)
+		| OnBlockStart -> (
+			let f = encode_on_block_start_callback hx_callback in
+			hooks.on_block <- (f :: hooks.on_block)
+		)
+		| OnAfterBlockExpr -> (
+			let f = encode_on_block_expr_callback hx_callback in
+			hooks.on_block_next <- (f :: hooks.on_block_next)
+		)
 		| OnTypeDeclaration -> (
 			let f = encode_on_type_decl_callback hx_callback in
 			hooks.on_type_decl <- (f :: hooks.on_type_decl)
@@ -99,6 +130,8 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 (********************************************)
 let key_on_expr = EvalHash.hash "onExpr"
 let key_on_after_expr = EvalHash.hash "onAfterExpr"
+let key_on_block_start = EvalHash.hash "onBlockExpr"
+let key_on_block_expr = EvalHash.hash "onAfterBlockExpr"
 let key_on_type_decl = EvalHash.hash "onTypeDeclaration"
 let key_on_class_field = EvalHash.hash "onClassField"
 
@@ -118,6 +151,14 @@ let setup_macro_functions =
 				on_expr_next = (
 					let f = EvalField.object_field obj key_on_after_expr in
 					EvalDecode.decode_optional encode_on_after_expr_callback f
+				);
+				on_block = (
+					let f = EvalField.object_field obj key_on_block_start in
+					EvalDecode.decode_optional encode_on_block_start_callback f
+				);
+				on_block_next = (
+					let f = EvalField.object_field obj key_on_block_expr in
+					EvalDecode.decode_optional encode_on_block_expr_callback f
 				);
 				on_type_decl = (
 					let f = EvalField.object_field obj key_on_type_decl in

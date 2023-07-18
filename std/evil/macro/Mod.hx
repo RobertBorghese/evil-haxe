@@ -11,6 +11,8 @@ import evil.macro.TokenStream;
 typedef Mod = {
 	?onExpr: (TokenStream) -> haxe.macro.Expr,
 	?onAfterExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,
+	?onBlockExpr: (TokenStream) -> Void,
+	?onAfterBlockExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,
 	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> haxe.macro.Expr.TypeDefinition,
 	?onClassField: (TokenStream, Bool) -> haxe.macro.Expr.Field
 }
