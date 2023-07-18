@@ -22,6 +22,12 @@ typedef TokenStream = {
 	function nextExpr(): Expr;
 
 	/**
+		Consume the next semicolon.
+		Throws an error if it doesn't exist, UNLESS the previous token was `}`.
+	**/
+	function semicolon(): Position;
+
+	/**
 		Combine two positions.
 	**/
 	function posUnion(p1: Position, p2: Position): Position;
