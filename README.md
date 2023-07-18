@@ -141,3 +141,12 @@ This mod enables the pipe operator similar to what's seen in many functional lan
 ```haxe
 2 |> Math.pow(5) |> trace; // 25
 ```
+
+### Defer
+This mod enables the `defer` keyword [based on Go](https://go.dev/tour/flowcontrol/12).
+Deferred expressions are moved to the end of their block scope.
+```haxe
+// Hello world
+defer trace("world");
+trace("Hello");
+```
