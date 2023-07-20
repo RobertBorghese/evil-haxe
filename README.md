@@ -13,6 +13,8 @@ Evil Haxe is a modified version of the [Haxe](https://github.com/HaxeFoundation/
 
 This is achieved by exposing the token stream used internally by the Haxe compiler to the Haxe macro runtime. A "mod" is defined in Haxe by providing callback functions to pre-defined hooks added to the parser.
 
+To help you get started, this project provides some built-in mods as examples. You can check the list of them [here](#built-in-mods), and you can view their source code [here](std/evil/mods)! Also check out this minimal example below:
+
 #### Mod.hx
 ```haxe
 import evil.macro.TokenStream;
