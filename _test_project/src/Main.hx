@@ -1,6 +1,6 @@
 // Let the Haxe compiler know this module wants to use Evil Haxe mods.
 // Let's use the "pipe" mod and our custom "my_mod".
-#evil(pipe, defer, my_mod)
+#evil(pipe, defer, pow, my_mod)
 
 package;
 
@@ -10,6 +10,8 @@ function main() {
 
 	defer trace("happen last");
 	defer trace("happen before last");
+
+	trace('8 == ${2 * 2 * 2} == ${2 ** 3}');
 
 	// New "loop" feature created by "my_mod".
 	var i = 1;

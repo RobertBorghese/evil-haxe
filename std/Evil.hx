@@ -19,6 +19,7 @@ class Evil {
 	public static function init() {
 		evil.mods.Pipe.init(); // |> operator
 		evil.mods.Defer.init(); // defer
+		evil.mods.Pow.init(); // ** operator
 	}
 
 	/**
