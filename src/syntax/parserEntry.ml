@@ -360,6 +360,13 @@ let parse entry ctx code file =
 	in
 	let s = Stream.from (fun _ ->
 		let t = next_token() in
+
+		(* EVIL HAXE change *)
+		let t = match (EvilParser.call_hooks EvilParser.hooks.token_transmuter (fst t)) with
+			| Some t2 -> t2, snd t
+			| None -> t
+		in
+
 		TokenCache.add t;
 		Some t
 	) in

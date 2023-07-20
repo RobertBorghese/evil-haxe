@@ -1,5 +1,6 @@
 package evil.macro;
 
+import haxe.macro.Expr;
 import evil.macro.TokenStream;
 
 /**
@@ -9,10 +10,11 @@ import evil.macro.TokenStream;
 	at certain points.
 **/
 typedef Mod = {
-	?onExpr: (TokenStream, Bool) -> haxe.macro.Expr,
-	?onAfterExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,
+	?onExpr: (TokenStream, Bool) -> Null<Expr>,
+	?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
 	?onBlockExpr: (TokenStream) -> Void,
-	?onAfterBlockExpr: (TokenStream, haxe.macro.Expr) -> haxe.macro.Expr,
-	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> haxe.macro.Expr.TypeDefinition,
-	?onClassField: (TokenStream, Bool) -> haxe.macro.Expr.Field
+	?onAfterBlockExpr: (TokenStream, Expr) -> Null<Expr>,
+	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> Null<TypeDefinition>,
+	?onClassField: (TokenStream, Bool) -> Null<Field>,
+	?tokenTransmuter: (TokenType) -> Null<TokenType>
 }

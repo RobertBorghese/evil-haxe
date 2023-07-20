@@ -10,4 +10,5 @@ enum HookType {
 	OnAfterBlockExpr;
 	OnTypeDeclaration;
 	OnClassField;
+	TokenTransmuter;
 }

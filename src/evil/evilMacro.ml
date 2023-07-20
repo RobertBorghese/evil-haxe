@@ -96,6 +96,18 @@ let encode_on_class_field_callback hx_callback = (
 )
 
 (**
+	Converts a Haxe callback into an OnClassField hook-callable function.
+**)
+let encode_token_transmuter_callback hx_callback = (
+	let hxf = EvalMisc.prepare_callback hx_callback 1 in
+	(fun (token: Ast.token) ->
+		let hx_field = hxf [EvilEncode.encode_token token] in
+		if hx_field = vnull then None
+		else Some (EvilDecode.decode_token hx_field)
+	)
+)
+
+(**
 	Given a `EvalValue.value` callback and the hook type,
 	setup the callback to make a parser mod.
 **)
@@ -126,6 +138,10 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 			let f = encode_on_class_field_callback hx_callback in
 			hooks.on_class_field <- (f :: hooks.on_class_field)
 		)
+		| TokenTransmuter -> (
+			let f = encode_token_transmuter_callback hx_callback in
+			hooks.token_transmuter <- (f :: hooks.token_transmuter)
+		)
 
 (********************************************)
 let key_on_expr = EvalHash.hash "onExpr"
@@ -134,6 +150,7 @@ let key_on_block_start = EvalHash.hash "onBlockExpr"
 let key_on_block_expr = EvalHash.hash "onAfterBlockExpr"
 let key_on_type_decl = EvalHash.hash "onTypeDeclaration"
 let key_on_class_field = EvalHash.hash "onClassField"
+let key_token_transmuter = EvalHash.hash "tokenTransmuter"
 
 (**
 	Sets up all the functions callable using `Eval.nativeCall`.
@@ -167,6 +184,10 @@ let setup_macro_functions =
 				on_class_field = (
 					let f = EvalField.object_field obj key_on_class_field in
 					EvalDecode.decode_optional encode_on_class_field_callback f
+				);
+				token_transmuter = (
+					let f = EvalField.object_field obj key_token_transmuter in
+					EvalDecode.decode_optional encode_token_transmuter_callback f
 				);
 			};
 
