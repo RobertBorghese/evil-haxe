@@ -124,10 +124,13 @@ The `options` object should be a structure matching the `evil.macro.Mod` typedef
 For example, `onExpr` will execute whenever the compiler wants to parse an expression. It will first run all the `onExpr` functions provided by the enabled mods. The first to return a non-null `Expr` will have its return used instead of whatever would've been parsed normally. If all the mod functions return `null`, the compiler continues to parse the expression like normal.
 ```haxe
 typedef Mod = {
-    ?onExpr: (TokenStream) -> Null<Expr>,
-    ?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
-    ?onTypeDeclaration: (TokenStream, TypeDeclCompletionMode) -> Null<TypeDefinition>,
-    ?onClassField: (TokenStream, Bool) -> Null<Field>
+    ?onExpr: (TokenStream, Bool) -> Null<Expr>,
+	?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
+	?onBlockExpr: (TokenStream) -> Void,
+	?onAfterBlockExpr: (TokenStream, Expr) -> Null<Expr>,
+	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> Null<TypeDefinition>,
+	?onClassField: (TokenStream, Bool) -> Null<Field>,
+	?tokenTransmuter: (TokenType) -> Null<TokenType>
 }
 ```
 
