@@ -20,6 +20,7 @@ class Evil {
 		evil.mods.Pipe.init(); // |> operator
 		evil.mods.Defer.init(); // defer
 		evil.mods.Pow.init(); // ** operator
+		evil.mods.KotlinKeywords.init(); // kotlin keywords (fun and val)
 	}
 
 	/**
