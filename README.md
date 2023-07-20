@@ -136,6 +136,12 @@ typedef Mod = {
 # Built-in Mods
 Evil Haxe also contains pre-existing mods. These can be found in the standard library at `std/evil/mods`.
 
+### Pow
+This mod adds the `**` (exponentiation) operator from JavaScript/Python. For example, with `A ** B` it returns the value of `A` to the power of `B`. Internally it literally converts the expression into `Math.pow(A, B)`.
+```haxe
+trace(2 ** 3); // 8
+```
+
 ### Pipe
 This mod enables the pipe operator similar to what's seen in many functional languages:
 ```haxe
@@ -149,4 +155,14 @@ Deferred expressions are moved to the end of their block scope.
 // Hello world
 defer trace("world");
 trace("Hello");
+```
+
+### Kotlin Keywords
+This mod adds the `fun` keyword that acts as an alias for `function`, and it adds the `val` keyword as an alias for `final`. This mod demonstrates the `tokenTransmuter` property for mods.
+```haxe
+// Valid Haxe with this mod enabled.
+fun main() {
+    val a = 123;
+    trace(a); // 123
+}
 ```
