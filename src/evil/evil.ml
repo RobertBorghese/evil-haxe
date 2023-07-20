@@ -1,3 +1,6 @@
+(**
+	Called near the start of `Compiler.compile`.	
+**)
 let on_compile_start (ctx: CompilationContext.compilation_context) call_light_init_macro =
 	(* Register module-level attribute "evil" *)
 	Hashtbl.replace

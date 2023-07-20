@@ -35,12 +35,12 @@ let call_hooks_unit hook params =
 
 (**
 	The type used for global hooks.
-	TODO: Remove?
 **)
 type global_parser_hooks = {
 	mutable has_mods : bool;
 	mutable defaults : string list;
 	mutable conspiracies : string list;
+
 	mutable on_expr : ((token_stream * bool) -> (Ast.expr option)) list;
 	mutable on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
 	mutable on_block : (token_stream -> unit) list;
@@ -57,6 +57,7 @@ let hooks : global_parser_hooks = {
 	has_mods = false;
 	defaults = ["pipe"];
 	conspiracies = [];
+
 	on_expr = [];
 	on_expr_next = [];
 	on_block = [];
@@ -83,6 +84,9 @@ type parser_mod = {
 
 (***************************************************)
 
+(**
+	Check if there are any active hooks.
+**)
 let has_any_hooks () =
 	List.length hooks.on_expr > 0 &&
 	List.length hooks.on_expr_next > 0 &&
@@ -92,6 +96,10 @@ let has_any_hooks () =
 	List.length hooks.on_class_field > 0 &&
 	List.length hooks.token_transmuter > 0
 
+(**
+	Add a mod's hooks to the global hooks.
+	TODO: Is there a way to clean this up??
+**)
 let apply_mod parser_mod =
 	EvilUtil.unwrap_opt (fun h ->
 		hooks.on_expr <- (h :: hooks.on_expr);

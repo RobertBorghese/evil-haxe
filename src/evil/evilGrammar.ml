@@ -29,6 +29,9 @@ let parse_evil_header parse_call_params s =
 		)
 		| _ -> None
 
+(**
+	Clears all the global hooks.
+**)
 let clear_hooks () =
 	if hooks.has_mods = true then (
 		hooks.on_expr <- [];
@@ -41,6 +44,9 @@ let clear_hooks () =
 		hooks.has_mods <- false; 
 	)
 
+(**
+	Given a mod's name, finds the mod and adds its hooks to the global hooks.
+**)
 let install_mod (name,pos) =
 	if Hashtbl.mem EvilGlobalState.mods name then (
 		let parser_mod = Hashtbl.find EvilGlobalState.mods name in
@@ -51,6 +57,9 @@ let install_mod (name,pos) =
 		Parser.error (Custom msg) pos;
 	)
 
+(**
+	Called right at the start of file parsing.
+**)
 let on_parse_file_start parse_call_params s =
 	let evil_attribute = parse_evil_header parse_call_params s in
 
@@ -58,13 +67,9 @@ let on_parse_file_start parse_call_params s =
 
 	if Option.is_some evil_attribute then
 		let args,file = Option.get evil_attribute in
-		(* let key = Path.UniqueKey.create file in *)
-		(* List.iter (fun a -> print_endline (Ast.Printer.s_expr a)) args; *)
-
 		let mods = if List.length args == 0 then
 			List.map (fun (s: string) -> s,Globals.null_pos) hooks.defaults
 		else
 			List.map (fun (e: Ast.expr) -> Ast.Printer.s_expr e,snd e) args
 		in
-
 		List.iter install_mod mods

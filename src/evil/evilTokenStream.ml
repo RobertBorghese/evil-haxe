@@ -2,6 +2,11 @@ open EvalValue
 open EvalEncode
 open MacroContext
 
+(**
+	Generates the `evil.macro.TokenStream` structure in Haxe.
+
+	TODO: Should probably expose the parsing functions in separate class.
+**)
 let make_token_stream_for_haxe (token_stream: EvilParser.token_stream) =
 	Interp.encode_obj [
 		"peek", vfun0 (fun () ->

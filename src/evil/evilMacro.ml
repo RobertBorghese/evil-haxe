@@ -16,7 +16,7 @@ let add_macro_function name func =
 (**
 	Converts a Haxe callback into an OnExpr hook-callable function.
 **)
-let encode_on_expr_callback (hx_callback: EvalValue.value) = (
+let decode_on_expr_callback (hx_callback: EvalValue.value) = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
 	(fun ((token_stream: EvilParser.token_stream), (top_level: bool)) ->
 		let ctx = EvalContext.get_ctx() in
@@ -30,7 +30,7 @@ let encode_on_expr_callback (hx_callback: EvalValue.value) = (
 (**
 	Converts a Haxe callback into an OnAfterExpr hook-callable function.
 **)
-let encode_on_after_expr_callback hx_callback = (
+let decode_on_after_expr_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (expr: Ast.expr)) ->
 		let ctx = EvalContext.get_ctx() in
@@ -42,7 +42,7 @@ let encode_on_after_expr_callback hx_callback = (
 	)
 )
 
-let encode_on_block_start_callback hx_callback = (
+let decode_on_block_start_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
 	(fun (token_stream) ->
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
@@ -53,7 +53,7 @@ let encode_on_block_start_callback hx_callback = (
 (**
 	Converts a Haxe callback into an OnAfterBlockExpr hook-callable function.
 **)
-let encode_on_block_expr_callback hx_callback = (
+let decode_on_block_expr_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (expr: Ast.expr)) ->
 		let ctx = EvalContext.get_ctx() in
@@ -68,7 +68,7 @@ let encode_on_block_expr_callback hx_callback = (
 (**
 	Converts a Haxe callback into an OnTypeDecl hook-callable function.
 **)
-let encode_on_type_decl_callback hx_callback = (
+let decode_on_type_decl_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (mode: Parser.type_decl_completion_mode)) ->
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
@@ -85,7 +85,7 @@ let encode_on_type_decl_callback hx_callback = (
 (**
 	Converts a Haxe callback into an OnClassField hook-callable function.
 **)
-let encode_on_class_field_callback hx_callback = (
+let decode_on_class_field_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (is_module_level: bool)) ->
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
@@ -96,9 +96,9 @@ let encode_on_class_field_callback hx_callback = (
 )
 
 (**
-	Converts a Haxe callback into an OnClassField hook-callable function.
+	Converts a Haxe callback into an TokenTransmuter hook-callable function.
 **)
-let encode_token_transmuter_callback hx_callback = (
+let decode_token_transmuter_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
 	(fun (token: Ast.token) ->
 		let hx_field = hxf [EvilEncode.encode_token token] in
@@ -113,37 +113,22 @@ let encode_token_transmuter_callback hx_callback = (
 **)
 let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 	let hooks = EvilParser.hooks in
+	let add decode_func hook_list =
+		let f = decode_func hx_callback in
+		(f :: hook_list)
+	in
+	(* TODO: is there better way to do this? Can I put the assignment in `add`? *)
 	match t with
-		| OnExpr -> (
-			let f = encode_on_expr_callback hx_callback in
-			hooks.on_expr <- (f :: hooks.on_expr)
-		)
-		| OnAfterExpr -> (
-			let f = encode_on_after_expr_callback hx_callback in
-			hooks.on_expr_next <- (f :: hooks.on_expr_next)
-		)
-		| OnBlockStart -> (
-			let f = encode_on_block_start_callback hx_callback in
-			hooks.on_block <- (f :: hooks.on_block)
-		)
-		| OnAfterBlockExpr -> (
-			let f = encode_on_block_expr_callback hx_callback in
-			hooks.on_block_next <- (f :: hooks.on_block_next)
-		)
-		| OnTypeDeclaration -> (
-			let f = encode_on_type_decl_callback hx_callback in
-			hooks.on_type_decl <- (f :: hooks.on_type_decl)
-		)
-		| OnClassField -> (
-			let f = encode_on_class_field_callback hx_callback in
-			hooks.on_class_field <- (f :: hooks.on_class_field)
-		)
-		| TokenTransmuter -> (
-			let f = encode_token_transmuter_callback hx_callback in
-			hooks.token_transmuter <- (f :: hooks.token_transmuter)
-		)
+		| OnExpr            -> hooks.on_expr          <- add decode_on_expr_callback hooks.on_expr
+		| OnAfterExpr       -> hooks.on_expr_next     <- add decode_on_after_expr_callback hooks.on_expr_next
+		| OnBlockStart      -> hooks.on_block         <- add decode_on_block_start_callback hooks.on_block
+		| OnAfterBlockExpr  -> hooks.on_block_next    <- add decode_on_block_expr_callback hooks.on_block_next
+		| OnTypeDeclaration -> hooks.on_type_decl     <- add decode_on_type_decl_callback hooks.on_type_decl
+		| OnClassField      -> hooks.on_class_field   <- add decode_on_class_field_callback hooks.on_class_field
+		| TokenTransmuter   -> hooks.token_transmuter <- add decode_token_transmuter_callback hooks.token_transmuter
 
 (********************************************)
+
 let key_on_expr = EvalHash.hash "onExpr"
 let key_on_after_expr = EvalHash.hash "onAfterExpr"
 let key_on_block_start = EvalHash.hash "onBlockExpr"
@@ -160,35 +145,18 @@ let setup_macro_functions =
 		vfun2 (fun (name: EvalValue.value) (mod_obj: EvalValue.value) ->
 			let obj = Interp.decode_object mod_obj in
 			let n = Interp.decode_string name in
+			let decode_callback decode_func key =
+				let f = EvalField.object_field obj key in
+				EvalDecode.decode_optional decode_func f
+			in
 			Hashtbl.replace EvilGlobalState.mods n {
-				on_expr = (
-					let f = EvalField.object_field obj key_on_expr in
-					EvalDecode.decode_optional encode_on_expr_callback f
-				);
-				on_expr_next = (
-					let f = EvalField.object_field obj key_on_after_expr in
-					EvalDecode.decode_optional encode_on_after_expr_callback f
-				);
-				on_block = (
-					let f = EvalField.object_field obj key_on_block_start in
-					EvalDecode.decode_optional encode_on_block_start_callback f
-				);
-				on_block_next = (
-					let f = EvalField.object_field obj key_on_block_expr in
-					EvalDecode.decode_optional encode_on_block_expr_callback f
-				);
-				on_type_decl = (
-					let f = EvalField.object_field obj key_on_type_decl in
-					EvalDecode.decode_optional encode_on_type_decl_callback f
-				);
-				on_class_field = (
-					let f = EvalField.object_field obj key_on_class_field in
-					EvalDecode.decode_optional encode_on_class_field_callback f
-				);
-				token_transmuter = (
-					let f = EvalField.object_field obj key_token_transmuter in
-					EvalDecode.decode_optional encode_token_transmuter_callback f
-				);
+				on_expr          = decode_callback decode_on_expr_callback key_on_expr;
+				on_expr_next     = decode_callback decode_on_after_expr_callback key_on_after_expr;
+				on_block         = decode_callback decode_on_block_start_callback key_on_block_start;
+				on_block_next    = decode_callback decode_on_block_expr_callback key_on_block_expr;
+				on_type_decl     = decode_callback decode_on_type_decl_callback key_on_type_decl;
+				on_class_field   = decode_callback decode_on_class_field_callback key_on_class_field;
+				token_transmuter = decode_callback decode_token_transmuter_callback key_token_transmuter;
 			};
 
 			vnull
