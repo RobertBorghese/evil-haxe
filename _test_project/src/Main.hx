@@ -1,6 +1,6 @@
 // Let the Haxe compiler know this module wants to use Evil Haxe mods.
 // Let's use the "pipe" mod and our custom "my_mod".
-#evil(pipe, defer, pow, kotlin_keywords, my_mod)
+#evil(pipe, defer, pow, kotlin_keywords, return_assign, my_mod)
 
 package;
 
@@ -18,6 +18,10 @@ fun main() {
 	// "kotlin_keywords" mod
 	val constant_val = 123;
 	constant_val |> trace;
+
+	// "return assign" mod
+	fun get_123(x: Int) = 123 * x;
+	trace(get_123(1) == get_123_top());
 
 	// New "loop" feature created by "my_mod".
 	var i = 1;
@@ -37,3 +41,6 @@ fun repeat(number: Int, s: String): String {
 	}
 	return result;
 }
+
+// return assign (top-level)
+fun get_123_top() = 123;

@@ -153,6 +153,13 @@ This mod enables the pipe operator similar to what's seen in many functional lan
 2 |> Math.pow(5) |> trace; // 25
 ```
 
+## Return Assign
+This mod adds a shorthand for writing function bodies based on Kotlin. A function declaration can be "assigned" its return expression.
+```haxe
+function half(num: Float) = num / 2.0;
+half(12); // returns 6
+```
+
 ## Defer
 This mod enables the `defer` keyword [based on Go](https://go.dev/tour/flowcontrol/12).
 Deferred expressions are moved to the end of their block scope.

@@ -21,6 +21,7 @@ class Evil {
 		evil.mods.Defer.init(); // defer
 		evil.mods.Pow.init(); // ** operator
 		evil.mods.KotlinKeywords.init(); // kotlin keywords (fun and val)
+		evil.mods.ReturnAssign.init(); // function = syntax
 	}
 
 	/**
