@@ -169,10 +169,3 @@ let setup_macro_functions =
 			vnull
 		)
 	);
-
-	add_macro_function "test_callback" (
-		vfun1 (fun callback ->
-			let f = EvalMisc.prepare_callback callback 1 in
-			f [encode_string "string from ocaml"]
-		)
-	)
