@@ -245,7 +245,7 @@ and parse_type_decl' mode s =
 		match s with parser
 		| [< '(Kwd Function,p1); name = dollar_ident; pl = parse_constraint_params; '(POpen,_); args = psep_trailing Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
 			let e, p2 = (match s with parser
-				| [< e = expr; s >] ->
+				| [< e = function_expr expr; s >] ->
 					ignore(semicolon s);
 					Some e, pos e
 				| [< p = semicolon >] -> None, p
@@ -1338,7 +1338,7 @@ and parse_function p1 inl s =
 			} in
 			EFunction ((match name with None -> FKAnonymous | Some (name,pn) -> FKNamed ((name,pn),inl)),f), punion p1 (pos e)
 		in
-		make (secure_expr s)
+		make (function_expr secure_expr s)
 	| [< >] ->
 		(* Generate pseudo function to avoid toplevel-completion (issue #10691). We check against p1 here in order to cover cases
 		   like `function a|b` *)
@@ -1405,6 +1405,12 @@ and top_expr s =
 	match hook_result with
 	| Some e -> e
 	| None -> expr' s
+
+and function_expr parse_func s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_function_expr (s) in
+	match hook_result with
+	| Some e -> e
+	| None -> parse_func s
 
 and expr' = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->

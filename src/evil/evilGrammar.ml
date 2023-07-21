@@ -36,6 +36,7 @@ let clear_hooks () =
 	if hooks.has_mods = true then (
 		hooks.on_expr <- [];
 		hooks.on_expr_next <- [];
+		hooks.on_function_expr <- [];
 		hooks.on_block <- [];
 		hooks.on_block_next <- [];
 		hooks.on_type_decl <- [];

@@ -4,6 +4,7 @@
 type hook_type =
 	| OnExpr
 	| OnAfterExpr
+	| OnFunctionExpr
 	| OnBlockStart
 	| OnAfterBlockExpr
 	| OnTypeDeclaration
@@ -43,6 +44,7 @@ type global_parser_hooks = {
 
 	mutable on_expr : ((token_stream * bool) -> (Ast.expr option)) list;
 	mutable on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
+	mutable on_function_expr : (token_stream -> (Ast.expr option)) list;
 	mutable on_block : (token_stream -> unit) list;
 	mutable on_block_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
 	mutable on_type_decl : ((token_stream * Parser.type_decl_completion_mode) -> (Ast.type_decl option)) list;
@@ -60,6 +62,7 @@ let hooks : global_parser_hooks = {
 
 	on_expr = [];
 	on_expr_next = [];
+	on_function_expr = [];
 	on_block = [];
 	on_block_next = [];
 	on_type_decl = [];
@@ -75,6 +78,7 @@ let hooks : global_parser_hooks = {
 type parser_mod = {
 	on_expr : ((token_stream * bool) -> (Ast.expr option)) option;
 	on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) option;
+	on_function_expr : (token_stream -> (Ast.expr option)) option;
 	on_block : (token_stream -> unit) option;
 	on_block_next : ((token_stream * Ast.expr) -> (Ast.expr option)) option;
 	on_type_decl : ((token_stream * Parser.type_decl_completion_mode) -> (Ast.type_decl option)) option;
@@ -90,6 +94,7 @@ type parser_mod = {
 let has_any_hooks () =
 	List.length hooks.on_expr > 0 &&
 	List.length hooks.on_expr_next > 0 &&
+	List.length hooks.on_function_expr > 0 &&
 	List.length hooks.on_block > 0 &&
 	List.length hooks.on_block_next > 0 &&
 	List.length hooks.on_type_decl > 0 &&
@@ -108,6 +113,10 @@ let apply_mod parser_mod =
 	EvilUtil.unwrap_opt (fun h ->
 		hooks.on_expr_next <- (h :: hooks.on_expr_next);
 	) parser_mod.on_expr_next;
+
+	EvilUtil.unwrap_opt (fun h ->
+		hooks.on_function_expr <- (h :: hooks.on_function_expr);
+	) parser_mod.on_function_expr;
 
 	EvilUtil.unwrap_opt (fun h ->
 		hooks.on_block <- (h :: hooks.on_block);

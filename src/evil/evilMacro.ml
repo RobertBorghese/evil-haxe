@@ -42,6 +42,23 @@ let decode_on_after_expr_callback hx_callback = (
 	)
 )
 
+(**
+	Converts a Haxe callback into an OnExpr hook-callable function.
+**)
+let decode_on_function_expr_callback (hx_callback: EvalValue.value) = (
+	let hxf = EvalMisc.prepare_callback hx_callback 1 in
+	(fun (token_stream: EvilParser.token_stream) ->
+		let ctx = EvalContext.get_ctx() in
+		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+		let hx_expr = hxf [hx_stream] in
+		if hx_expr = vnull then None
+		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+	)
+)
+
+(**
+	Converts a Haxe callback into an OnBlockExpr hook-callable function.
+**)
 let decode_on_block_start_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
 	(fun (token_stream) ->
@@ -121,6 +138,7 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 	match t with
 		| OnExpr            -> hooks.on_expr          <- add decode_on_expr_callback hooks.on_expr
 		| OnAfterExpr       -> hooks.on_expr_next     <- add decode_on_after_expr_callback hooks.on_expr_next
+		| OnFunctionExpr    -> hooks.on_function_expr <- add decode_on_function_expr_callback hooks.on_function_expr
 		| OnBlockStart      -> hooks.on_block         <- add decode_on_block_start_callback hooks.on_block
 		| OnAfterBlockExpr  -> hooks.on_block_next    <- add decode_on_block_expr_callback hooks.on_block_next
 		| OnTypeDeclaration -> hooks.on_type_decl     <- add decode_on_type_decl_callback hooks.on_type_decl
@@ -131,6 +149,7 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 
 let key_on_expr = EvalHash.hash "onExpr"
 let key_on_after_expr = EvalHash.hash "onAfterExpr"
+let key_on_function_expr = EvalHash.hash "onFunctionExpr"
 let key_on_block_start = EvalHash.hash "onBlockExpr"
 let key_on_block_expr = EvalHash.hash "onAfterBlockExpr"
 let key_on_type_decl = EvalHash.hash "onTypeDeclaration"
@@ -152,6 +171,7 @@ let setup_macro_functions =
 			Hashtbl.replace EvilGlobalState.mods n {
 				on_expr          = decode_callback decode_on_expr_callback key_on_expr;
 				on_expr_next     = decode_callback decode_on_after_expr_callback key_on_after_expr;
+				on_function_expr = decode_callback decode_on_function_expr_callback key_on_function_expr;
 				on_block         = decode_callback decode_on_block_start_callback key_on_block_start;
 				on_block_next    = decode_callback decode_on_block_expr_callback key_on_block_expr;
 				on_type_decl     = decode_callback decode_on_type_decl_callback key_on_type_decl;

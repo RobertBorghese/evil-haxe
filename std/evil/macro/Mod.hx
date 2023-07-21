@@ -12,6 +12,7 @@ import evil.macro.TokenStream;
 typedef Mod = {
 	?onExpr: (TokenStream, Bool) -> Null<Expr>,
 	?onAfterExpr: (TokenStream, Expr) -> Null<Expr>,
+	?onFunctionExpr: (TokenStream) -> Null<Expr>,
 	?onBlockExpr: (TokenStream) -> Void,
 	?onAfterBlockExpr: (TokenStream, Expr) -> Null<Expr>,
 	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> Null<TypeDefinition>,

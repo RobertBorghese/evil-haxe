@@ -8,11 +8,12 @@ let decode_hook_type t =
 	match Interp.decode_enum t with
 	| 0, [] -> OnExpr
 	| 1, [] -> OnAfterExpr
-	| 2, [] -> OnBlockStart
-	| 3, [] -> OnAfterBlockExpr
-	| 4, [] -> OnTypeDeclaration
-	| 5, [] -> OnClassField
-	| 6, [] -> TokenTransmuter
+	| 2, [] -> OnFunctionExpr
+	| 3, [] -> OnBlockStart
+	| 4, [] -> OnAfterBlockExpr
+	| 5, [] -> OnTypeDeclaration
+	| 6, [] -> OnClassField
+	| 7, [] -> TokenTransmuter
 	| _ -> EvalExceptions.unexpected_value t "enum"
 
 let decode_type_decl_completion_mode m =
