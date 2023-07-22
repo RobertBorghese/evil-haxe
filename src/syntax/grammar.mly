@@ -122,6 +122,9 @@ let check_redundant_var p1 = parser
 let parsing_macro_cond = ref false
 
 let rec	parse_file s =
+	(* EVIL HAXE change *)
+	EvilGrammar.on_parse_file_start parse_call_params s;
+
 	last_doc := None;
 	match s with parser
 	| [< '(Kwd Package,_); pack = parse_package; s >] ->
@@ -228,7 +231,13 @@ and parse_class_content doc meta flags n p1 s =
 		d_data = fl;
 	}, punion p1 p2)
 
+(* EVIL HAXE change *)
 and parse_type_decl mode s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_type_decl (s, mode)) with
+	| Some hook_expr -> hook_expr
+	| None -> parse_type_decl' mode s
+
+and parse_type_decl' mode s =
 	match s with parser
 	| [< '(Kwd Import,p1) >] -> parse_import s p1
 	| [< '(Kwd Using,p1) >] -> parse_using s p1
@@ -236,7 +245,7 @@ and parse_type_decl mode s =
 		match s with parser
 		| [< '(Kwd Function,p1); name = dollar_ident; pl = parse_constraint_params; '(POpen,_); args = psep_trailing Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
 			let e, p2 = (match s with parser
-				| [< e = expr; s >] ->
+				| [< e = (* EVIL HAXE change *) function_expr expr; s >] ->
 					ignore(semicolon s);
 					Some e, pos e
 				| [< p = semicolon >] -> None, p
@@ -936,7 +945,13 @@ and parse_var_field_assignment = parser
 	| [< p2 = semicolon >] -> None , p2
 	| [< >] -> serror()
 
+(* EVIL HAXE change *)
 and parse_class_field tdecl s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_class_field (s, tdecl)) with
+	| Some hook_cf -> hook_cf
+	| None -> parse_class_field' tdecl s
+
+and parse_class_field' tdecl s =
 	let doc = get_doc s in
 	let meta = parse_meta s in
 	match s with parser
@@ -1102,10 +1117,18 @@ and parse_class_herit = parser
 	| [< '(Kwd Extends,p1); t,_ = parse_type_path_or_resume p1 >] -> HExtends t
 	| [< '(Kwd Implements,p1); t,_ = parse_type_path_or_resume p1 >] -> HImplements t
 
+(* EVIL HAXE change *)
+and on_block_start s =
+	EvilParser.call_hooks_unit EvilParser.hooks.on_block s;
+
+and on_block1_parse_block s =
+	on_block_start s;
+	block [] s
+
 and block1 = parser
 	| [< name,p = dollar_ident; s >] -> block2 (name,p,NoQuotes) (Ident name) p s
 	| [< '(Const (String(name,qs)),p); s >] -> block2 (name,p,DoubleQuotes) (String(name,qs)) p s (* STRINGTODO: qs... hmm *)
-	| [< b = block [] >] -> EBlock b
+	| [< b = (* EVIL HAXE change *) on_block1_parse_block >] -> EBlock b
 
 and block2 name ident p s =
 	match s with parser
@@ -1113,6 +1136,9 @@ and block2 name ident p s =
 		let e = secure_expr s in
 		fst (parse_obj_decl name e p s)
 	| [< >] ->
+		(* EVIL HAXE change *)
+		on_block_start s;
+
 		let f s =
 			let e = expr_next (EConst ident,p) s in
 			let _ = semicolon s in
@@ -1176,7 +1202,7 @@ and parse_block_elt = parser
 			| [< >] -> ()
 		end;
 		e
-	| [< e = expr; _ = semicolon >] -> e
+	| [< e = (* EVIL HAXE change *) top_expr; _ = semicolon >] -> e
 
 and parse_obj_decl name e p0 s =
 	let make_obj_decl el p1 =
@@ -1312,7 +1338,7 @@ and parse_function p1 inl s =
 			} in
 			EFunction ((match name with None -> FKAnonymous | Some (name,pn) -> FKNamed ((name,pn),inl)),f), punion p1 (pos e)
 		in
-		make (secure_expr s)
+		make ((* EVIL HAXE change *) function_expr secure_expr s)
 	| [< >] ->
 		(* Generate pseudo function to avoid toplevel-completion (issue #10691). We check against p1 here in order to cover cases
 		   like `function a|b` *)
@@ -1367,7 +1393,26 @@ and arrow_first_param e s =
 	| _ ->
 		serror())
 
-and expr = parser
+(* EVIL HAXE change *)
+and expr s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr (s, false) in
+	match hook_result with
+	| Some e -> e
+	| None -> expr' s
+
+and top_expr s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr (s, true) in
+	match hook_result with
+	| Some e -> e
+	| None -> expr' s
+
+and function_expr parse_func s =
+	let hook_result = EvilParser.call_hooks EvilParser.hooks.on_function_expr (s) in
+	match hook_result with
+	| Some e -> e
+	| None -> parse_func s
+
+and expr' = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
 			make_meta name params (secure_expr s) p
@@ -1390,6 +1435,14 @@ and expr = parser
 			let e = (b,punion p1 p2) in
 			(match b with
 			| EObjectDecl _ -> expr_next e s
+
+			(* EVIL HAXE change *)
+			| EBlock _ -> (
+				match (EvilParser.call_hooks EvilParser.hooks.on_block_next (s, e)) with
+				| Some hook_expr -> hook_expr
+				| None -> e
+			)
+			
 			| _ -> e)
 		| [< >] ->
 			check_resume p1 (fun() -> (EDisplay ((EObjectDecl [],p1),DKStructure),p1)) serror;
@@ -1555,9 +1608,13 @@ and expr = parser
 	| [< '(Dollar v,p); s >] -> expr_next (EConst (Ident ("$"^v)),p) s
 	| [< '(Kwd Inline,p); e = secure_expr >] -> make_meta Meta.Inline [] e p
 
+(* EVIL HAXE change *)
 and expr_next e1 s =
 	try
-		expr_next' e1 s
+		let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr_next (s, e1) in
+		match hook_result with
+		| Some e -> e
+		| None -> expr_next' e1 s
 	with Stream.Error msg when !in_display ->
 		handle_stream_error msg s;
 		e1

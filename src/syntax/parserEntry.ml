@@ -296,7 +296,10 @@ let parse entry ctx code file =
 			!(Lexer.cur).Lexer.lline <- line - 1;
 			next_token();
 		| Sharp s ->
-			sharp_error s (pos tk)
+			(* EVIL HAXE change *)
+			let t = EvilParserEntry.check_sharp tk s (Path.UniqueKey.create file) next_token in
+			if Option.is_some t then Option.get t
+			else sharp_error s (pos tk)
 		| _ ->
 			tk
 
@@ -357,6 +360,13 @@ let parse entry ctx code file =
 	in
 	let s = Stream.from (fun _ ->
 		let t = next_token() in
+
+		(* EVIL HAXE change *)
+		let t = match (EvilParser.call_hooks EvilParser.hooks.token_transmuter (fst t)) with
+			| Some t2 -> t2, snd t
+			| None -> t
+		in
+		
 		TokenCache.add t;
 		Some t
 	) in

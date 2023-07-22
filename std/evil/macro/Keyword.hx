@@ -1,0 +1,52 @@
+package evil.macro;
+
+/**
+	Exposes the `Ast.keyword` enum from the Haxe compiler.
+**/
+enum Keyword {
+	Function;
+	Class;
+	Var;
+	If;
+	Else;
+	While;
+	Do;
+	For;
+	Break;
+	Continue;
+	Return;
+	Extends;
+	Implements;
+	Import;
+	Switch;
+	Case;
+	Default;
+	Static;
+	Public;
+	Private;
+	Try;
+	Catch;
+	New;
+	This;
+	Throw;
+	Extern;
+	Enum;
+	In;
+	Interface;
+	Untyped;
+	Cast;
+	Override;
+	Typedef;
+	Dynamic;
+	Package;
+	Inline;
+	Using;
+	Null;
+	True;
+	False;
+	Abstract;
+	Macro;
+	Final;
+	Operator;
+	Overload;
+}

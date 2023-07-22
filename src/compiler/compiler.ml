@@ -211,6 +211,10 @@ module Setup = struct
 		Common.define_value com Define.Haxe s_version;
 		Common.raw_define com "true";
 		Common.define_value com Define.Dce "std";
+
+		(* EVIL HAXE change *)
+		Common.raw_define com "evilhaxe";
+
 		com.info <- (fun ?(depth=0) msg p -> message ctx (make_compiler_message msg p depth DKCompilerMessage Information));
 		com.warning <- (fun ?(depth=0) w options msg p ->
 			match Warning.get_mode w (com.warning_options @ options) with
@@ -263,6 +267,10 @@ let do_type ctx tctx actx =
 	let cs = com.cs in
 	CommonCache.maybe_add_context_sign cs com "before_init_macros";
 	com.stage <- CInitMacrosStart;
+
+	(* EVIL HAXE change *)
+	ignore(Evil.on_compile_start ctx (MacroContext.call_init_macro tctx));
+
 	List.iter (MacroContext.call_init_macro tctx) (List.rev actx.config_macros);
 	com.stage <- CInitMacrosDone;
 	check_defines ctx.com;

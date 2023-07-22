@@ -104,6 +104,11 @@ type enum_type =
 	| IFunctionKind
 	| IStringLiteralKind
 
+	(* EVIL HAXE change *)
+	| IToken
+	| IKeyword
+	| ITypeDeclCompletionMode
+
 (**
 	Our access to the interpreter from the macro api
 **)
