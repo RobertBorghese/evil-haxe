@@ -86,7 +86,7 @@ The main branch is an edit of Haxe's development branch, but if you wish to use 
 
 If building Haxe is too high above your skill level, I'm also committing the Windows 64-bit builds I'm testing into the repo. To install:
 1) Download the [latest nightly of Haxe](https://build.haxe.org/builds/haxe/windows64/haxe_latest.zip) OR the [latest version of 4.3](https://haxe.org/download/version/4.3.1/) and install (or use an existing installation).
-2) Download the `evil_haxe.zip` from the [main branch (nightly)](evil_haxe.zip) or the [4.3 branch](blob/evil-4.3/evil_haxe.zip).
+2) Download the `evil_haxe.zip` from the [main branch (nightly)](evil_haxe.zip) or the [4.3 branch](https://github.com/RobertBorghese/evil-haxe/blob/evil-4.3/evil_haxe.zip).
 3) Extract the contents of evil_haxe.zip and paste into the Haxe installation folder (`std/` folder should be merged).
 4) Run the `evil_haxe` executable like you would with the Haxe compiler normally.
 
