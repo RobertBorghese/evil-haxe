@@ -83,12 +83,10 @@ Anyway, just setting this repo up to work on whenever I'm bored. Feel free to ma
 Please visit [BUILDING](https://github.com/HaxeFoundation/haxe/blob/development/extra/BUILDING.md) to learn how to compile the Haxe compiler. The process is identical for Evil Haxe.
 
 However, if this is too much work, I'm also committing the Windows builds I'm testing into the repo. To install:
+1) Download the [latest nightly of Haxe](https://build.haxe.org/builds/haxe/windows64/haxe_latest.zip) and install (or use an existing installation).
 2) Download [evil_haxe.zip](evil_haxe.zip).
 3) Extract the contents of evil_haxe.zip and paste into the Haxe installation folder (`std/` folder should be merged).
 4) Run the `evil_haxe` executable like you would with the Haxe compiler normally.
-1. Download the
-   [latest nightly of Haxe](https://build.haxe.org/builds/haxe/windows64/haxe_latest.zip)
-   and install (or use an existing installation).
 
 &nbsp;
 &nbsp;
