@@ -1412,6 +1412,12 @@ and function_expr parse_func s =
 	| Some e -> e
 	| None -> parse_func s
 
+and switch_expr parse_func s =
+	EvilParser.hooks.parsing_switch_expr <- true;
+	let result = parse_func s in
+	EvilParser.hooks.parsing_switch_expr <- false;
+	result
+
 and expr' = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
@@ -1589,7 +1595,7 @@ and expr' = parser
 			| [< >] ->
 				syntax_error (Expected ["while"]) s e (* ignore do *)
 		end
-	| [< '(Kwd Switch,p1); e = secure_expr; s >] ->
+	| [< '(Kwd Switch,p1); e = (* EVIL HAXE change *) switch_expr secure_expr; s >] ->
 		begin match s with parser
 			| [< '(BrOpen,_); cases , def = parse_switch_cases e [] >] ->
 				let p2 = match s with parser

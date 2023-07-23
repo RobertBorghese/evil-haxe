@@ -42,6 +42,8 @@ type global_parser_hooks = {
 	mutable defaults : string list;
 	mutable conspiracies : string list;
 
+	mutable parsing_switch_expr : bool;
+
 	mutable on_expr : ((token_stream * bool) -> (Ast.expr option)) list;
 	mutable on_expr_next : ((token_stream * Ast.expr) -> (Ast.expr option)) list;
 	mutable on_function_expr : (token_stream -> (Ast.expr option)) list;
@@ -59,6 +61,8 @@ let hooks : global_parser_hooks = {
 	has_mods = false;
 	defaults = ["pipe"];
 	conspiracies = [];
+
+	parsing_switch_expr = false;
 
 	on_expr = [];
 	on_expr_next = [];

@@ -34,6 +34,12 @@ typedef TokenStream = {
 	function parseBlockInternals(): Array<Expr>;
 
 	/**
+		Returns `true` if the compiler is currently parsing an expression immediately 
+		after the `switch` keyword (but before the switch statement `{`).
+	**/
+	function isParsingSwitchExpr(): Bool;
+
+	/**
 		Combine two positions.
 	**/
 	function posUnion(p1: Position, p2: Position): Position;
