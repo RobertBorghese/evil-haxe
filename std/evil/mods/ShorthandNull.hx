@@ -10,18 +10,22 @@ import evil.macro.TokenStream;
 **/
 function init() {
 	Evil.addParserMod("shorthand_null", {
-		onType: onType
+		onAfterType: onAfterType
 	});
 }
 
 /**
 **/
-function onType(stream: TokenStream): Null<{ type: ComplexType, pos: Position }> {
+function onAfterType(stream: TokenStream, type: { type: ComplexType, pos: Position }): Null<{ type: ComplexType, pos: Position }> {
 	final t = stream.peek();
 	return switch(t.token) {
-		case Const(CIdent("Bla")): {
+		case Question: {
 			stream.consume();
-			stream.nextType();
+			final prevType = type.type;
+			{
+				type: macro : Null<$prevType>,
+				pos: stream.posUnion(type.pos, t.pos)
+			};
 		}
 		case _: {
 			null;

@@ -7,6 +7,7 @@
 
 package;
 
+@:nullSafety(Strict)
 fun main() {
 	// "pipe" mod.
 	"test" |> repeat(3) |> trace;
@@ -43,7 +44,7 @@ fun main() {
 	trace(do_calc(10) { num -> return num * 2; });
 	trace(do_calc(10) { num -> num * 2; });
 
-	final qwqwe: Bla Int = 123;
+	final qwqwe: Int? = null;
 	trace(qwqwe);
 }
 
