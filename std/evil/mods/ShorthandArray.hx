@@ -26,16 +26,16 @@ function onAfterType(stream: TokenStream, type: { type: ComplexType, pos: Positi
 				case BkClose: {
 					stream.consume();
 					final prevType = type.type;
-					{
+					final result = {
 						type: macro : Array<$prevType>,
 						pos: stream.posUnion(type.pos, t2.pos)
 					};
+					stream.parsePostType(result);
 				}
+				case _: null;
 			}
 		}
-		case _: {
-			null;
-		}
+		case _: null;
 	}
 }
 

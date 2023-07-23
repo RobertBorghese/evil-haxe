@@ -22,10 +22,11 @@ function onAfterType(stream: TokenStream, type: { type: ComplexType, pos: Positi
 		case Question: {
 			stream.consume();
 			final prevType = type.type;
-			{
+			final result = {
 				type: macro : Null<$prevType>,
 				pos: stream.posUnion(type.pos, t.pos)
 			};
+			stream.parsePostType(result);
 		}
 		case _: {
 			null;
