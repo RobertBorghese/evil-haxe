@@ -5,7 +5,10 @@ open MacroContext
 (**
 	Generates the `evil.macro.TokenStream` structure in Haxe.
 
-	TODO: Should probably expose the parsing functions in separate class.
+	[NOTE]
+	Tried putting the parsing functions into their own classes (i.e. the `Grammar`-related functions
+	into a Haxe exposed `Grammar` class), but could not for the life of me resolve all the dependency-cycle issues.
+	To any future person looking at this... just be warned.
 **)
 let make_token_stream_for_haxe (token_stream: EvilParser.token_stream) =
 	Interp.encode_obj [
