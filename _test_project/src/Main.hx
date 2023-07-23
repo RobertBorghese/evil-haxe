@@ -1,6 +1,6 @@
 // Let the Haxe compiler know this module wants to use Evil Haxe mods.
 // Let's use the "pipe" mod and our custom "my_mod".
-#evil(pipe, defer, pow, kotlin_keywords, return_assign, my_mod)
+#evil(pipe, defer, pow, kotlin_keywords, return_assign, trailing_lambda, my_mod)
 
 package;
 
@@ -32,6 +32,13 @@ fun main() {
 		}
 	}
 	trace(i);
+
+	call_func {
+		trace("Trailing lambda success!");
+	};
+
+	trace(do_calc(10) { num -> return num * 2; });
+	trace(do_calc(10) { num -> num * 2; });
 }
 
 fun repeat(number: Int, s: String): String {
@@ -44,3 +51,10 @@ fun repeat(number: Int, s: String): String {
 
 // return assign (top-level)
 fun get_123_top() = 123;
+
+fun call_func(a: () -> Void) {
+	a();
+}
+
+fun do_calc(base_num: Int, transform_num: (Int) -> Int) =
+	transform_num(base_num);
