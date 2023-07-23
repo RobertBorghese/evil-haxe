@@ -24,6 +24,7 @@ class Evil {
 		evil.mods.ReturnAssign.init(); // function = syntax
 		evil.mods.TrailingLambda.init(); // trailing lambda
 		evil.mods.ShorthandNull.init(); // Type?
+		evil.mods.ShorthandArray.init(); // Type[]
 	}
 
 	/**

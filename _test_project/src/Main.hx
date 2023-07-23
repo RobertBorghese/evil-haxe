@@ -2,7 +2,7 @@
 // Let's use the "pipe" mod and our custom "my_mod".
 #evil(
 	pipe, defer, pow, kotlin_keywords, return_assign,
-	trailing_lambda, shorthand_null, my_mod
+	trailing_lambda, shorthand_null, shorthand_array, my_mod
 )
 
 package;
@@ -46,6 +46,12 @@ fun main() {
 
 	final qwqwe: Int? = null;
 	trace(qwqwe);
+
+	var arr: Int?[]? = null;
+	if(arr == null) arr = [];
+	arr.push(null);
+	arr.push(11);
+	trace(arr);
 }
 
 fun repeat(number: Int, s: String): String {
