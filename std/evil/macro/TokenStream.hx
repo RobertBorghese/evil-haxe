@@ -28,6 +28,12 @@ typedef TokenStream = {
 	function semicolon(): Position;
 
 	/**
+		Parses the content within a block expression AFTER the `{` token.
+		Does not parse the ending `}` token.
+	**/
+	function parseBlockInternals(): Array<Expr>;
+
+	/**
 		Combine two positions.
 	**/
 	function posUnion(p1: Position, p2: Position): Position;
