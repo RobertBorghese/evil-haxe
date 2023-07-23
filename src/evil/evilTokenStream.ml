@@ -32,12 +32,12 @@ let make_token_stream_for_haxe (token_stream: EvilParser.token_stream) =
 			Interp.encode_expr (Grammar.expr_next (Interp.decode_expr e) token_stream)
 		);
 		"nextType", vfun0 (fun () ->
-			let type_hint = Grammar.parse_complex_type' token_stream in
+			let type_hint = Grammar.parse_complex_type token_stream in
 			EvilEncode.encode_ctype_and_pos type_hint
 		);
 		"parsePostType", vfun1 (fun t ->
 			let type_hint = EvilDecode.decode_ctype_and_pos t in
-			let type_hint = Grammar.parse_complex_type_next' type_hint token_stream in
+			let type_hint = Grammar.parse_complex_type_next type_hint token_stream in
 			EvilEncode.encode_ctype_and_pos type_hint
 		);
 		"semicolon", vfun0 (fun () ->
