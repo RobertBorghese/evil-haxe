@@ -657,7 +657,13 @@ and parse_type_opt = parser
 	| [< t = parse_type_hint >] -> Some t
 	| [< >] -> None
 
-and parse_complex_type s = parse_complex_type_maybe_named false s
+(* EVIL HAXE change *)
+and parse_complex_type s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_type (s)) with
+	| Some hook_ct -> hook_ct
+	| None -> parse_complex_type' s
+
+and parse_complex_type' s = parse_complex_type_maybe_named false s
 
 and parse_complex_type_maybe_named allow_named = parser
 	| [< '(POpen,p1); tl = psep_trailing Comma (parse_complex_type_maybe_named true); '(PClose,p2); s >] ->
@@ -806,7 +812,13 @@ and parse_type_path_or_const plt = parser
 		end else
 			serror()
 
+(* EVIL HAXE change *)
 and parse_complex_type_next (t : type_hint) s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_after_type (s, t)) with
+	| Some hook_ct -> hook_ct
+	| None -> parse_complex_type_next' t s
+
+and parse_complex_type_next' (t : type_hint) s =
 	let make_fun t2 p2 = match t2 with
 		| CTFunction (args,r) ->
 			CTFunction (t :: args,r),punion (pos t) p2
@@ -1412,6 +1424,12 @@ and function_expr parse_func s =
 	| Some e -> e
 	| None -> parse_func s
 
+and switch_expr parse_func s =
+	EvilParser.hooks.parsing_switch_expr <- true;
+	let result = parse_func s in
+	EvilParser.hooks.parsing_switch_expr <- false;
+	result
+
 and expr' = parser
 	| [< (name,params,p) = parse_meta_entry; s >] ->
 		begin try
@@ -1589,7 +1607,7 @@ and expr' = parser
 			| [< >] ->
 				syntax_error (Expected ["while"]) s e (* ignore do *)
 		end
-	| [< '(Kwd Switch,p1); e = secure_expr; s >] ->
+	| [< '(Kwd Switch,p1); e = (* EVIL HAXE change *) switch_expr secure_expr; s >] ->
 		begin match s with parser
 			| [< '(BrOpen,_); cases , def = parse_switch_cases e [] >] ->
 				let p2 = match s with parser

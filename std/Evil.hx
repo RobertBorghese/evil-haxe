@@ -22,6 +22,8 @@ class Evil {
 		evil.mods.Pow.init(); // ** operator
 		evil.mods.KotlinKeywords.init(); // kotlin keywords (fun and val)
 		evil.mods.ReturnAssign.init(); // function = syntax
+		evil.mods.TrailingLambda.init(); // trailing lambda
+		evil.mods.ShorthandNull.init(); // Type?
 	}
 
 	/**
