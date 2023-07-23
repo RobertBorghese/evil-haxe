@@ -22,6 +22,15 @@ typedef TokenStream = {
 	function nextExpr(): Expr;
 
 	/**
+		Parses the content after an expression.
+		This is stuff like infix operators (+ - *), dot access (.), call ( () ), etc.
+
+		Use this to parse incomplete expressions or support post-expression features
+		with mod's new expression syntax.
+	**/
+	function parsePostExpr(e: Expr): Expr;
+
+	/**
 		Consume the next semicolon.
 		Throws an error if it doesn't exist, UNLESS the previous token was `}`.
 	**/
