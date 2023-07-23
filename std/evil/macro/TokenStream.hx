@@ -35,6 +35,10 @@ typedef TokenStream = {
 	function nextType(): { type: ComplexType, pos: Position };
 
 	/**
+	**/
+	function parsePostType(t: { type: ComplexType, pos: Position }): { type: ComplexType, pos: Position };
+
+	/**
 		Consume the next semicolon.
 		Throws an error if it doesn't exist, UNLESS the previous token was `}`.
 	**/

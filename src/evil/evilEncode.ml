@@ -86,3 +86,10 @@ let encode_type_decl_completion_mode (t: Parser.type_decl_completion_mode) =
 		| TCAfterType -> 2
 	in
 	MacroContext.Interp.encode_enum ITypeDeclCompletionMode tag []
+
+let encode_ctype_and_pos (t: Ast.type_hint) =
+	let open MacroContext in
+	Interp.encode_obj [
+		"type", Interp.encode_ctype t;
+		"pos", Interp.encode_pos (snd t)
+	]

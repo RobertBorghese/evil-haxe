@@ -100,3 +100,8 @@ let decode_token t =
 	| 23, [s] -> Dollar (Interp.decode_string s)
 	| 24, [] -> Spread
 	| _ -> EvalExceptions.unexpected_value t "enum"
+
+let decode_ctype_and_pos o =
+	let type_value = EvalField.field o (EvalHash.hash "type") in
+	let pos_value = EvalField.field o (EvalHash.hash "pos") in
+	(fst (Interp.decode_ctype type_value)),(Interp.decode_pos pos_value)

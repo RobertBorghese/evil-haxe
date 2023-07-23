@@ -813,6 +813,11 @@ and parse_type_path_or_const plt = parser
 			serror()
 
 and parse_complex_type_next (t : type_hint) s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_after_type (s, t)) with
+	| Some hook_ct -> hook_ct
+	| None -> parse_complex_type_next' t s
+
+and parse_complex_type_next' (t : type_hint) s =
 	let make_fun t2 p2 = match t2 with
 		| CTFunction (args,r) ->
 			CTFunction (t :: args,r),punion (pos t) p2

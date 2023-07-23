@@ -10,6 +10,7 @@ enum HookType {
 	OnBlockExpr;
 	OnAfterBlockExpr;
 	OnType;
+	OnAfterType;
 	OnTypeDeclaration;
 	OnClassField;
 	TokenTransmuter;

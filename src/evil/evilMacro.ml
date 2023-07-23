@@ -43,7 +43,7 @@ let decode_on_after_expr_callback hx_callback = (
 )
 
 (**
-	Converts a Haxe callback into an OnExpr hook-callable function.
+	Converts a Haxe callback into an OnFunctionExpr hook-callable function.
 **)
 let decode_on_function_expr_callback (hx_callback: EvalValue.value) = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
@@ -92,10 +92,25 @@ let decode_on_type_callback (hx_callback : EvalValue.value): (EvilParser.token_s
 		let hx_type_hint = hxf [hx_stream] in
 		if hx_type_hint = vnull then None
 		else (
-			let type_value = EvalField.field hx_type_hint (EvalHash.hash "type") in
-			let pos_value = EvalField.field hx_type_hint (EvalHash.hash "pos") in
-			Some ((fst (Interp.decode_ctype type_value)),(Interp.decode_pos pos_value))
+			Some (EvilDecode.decode_ctype_and_pos hx_type_hint)
 		)
+	)
+)
+
+(**
+	Converts a Haxe callback into an OnAfterType hook-callable function.
+**)
+let decode_on_after_type_callback (hx_callback : EvalValue.value) = (
+	let hxf = EvalMisc.prepare_callback hx_callback 2 in
+	(fun ((token_stream: EvilParser.token_stream), (type_hint: Ast.type_hint)) ->
+		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
+		let hx_type_hint_arg = Interp.encode_obj [
+			"type", Interp.encode_ctype type_hint;
+			"pos", Interp.encode_pos (snd type_hint)
+		] in
+		let hx_type_hint = hxf [hx_stream; hx_type_hint_arg] in
+		if hx_type_hint = vnull then None
+		else Some (EvilDecode.decode_ctype_and_pos hx_type_hint)
 	)
 )
 
@@ -159,6 +174,7 @@ let setup_hook (t: EvilParser.hook_type) (hx_callback: EvalValue.value) =
 		| OnBlockStart      -> hooks.on_block         <- add decode_on_block_start_callback hooks.on_block
 		| OnAfterBlockExpr  -> hooks.on_block_next    <- add decode_on_block_expr_callback hooks.on_block_next
 		| OnType            -> hooks.on_type          <- add decode_on_type_callback hooks.on_type
+		| OnAfterType       -> hooks.on_after_type    <- add decode_on_after_type_callback hooks.on_after_type
 		| OnTypeDeclaration -> hooks.on_type_decl     <- add decode_on_type_decl_callback hooks.on_type_decl
 		| OnClassField      -> hooks.on_class_field   <- add decode_on_class_field_callback hooks.on_class_field
 		| TokenTransmuter   -> hooks.token_transmuter <- add decode_token_transmuter_callback hooks.token_transmuter
@@ -171,6 +187,7 @@ let key_on_function_expr = EvalHash.hash "onFunctionExpr"
 let key_on_block_start = EvalHash.hash "onBlockExpr"
 let key_on_block_expr = EvalHash.hash "onAfterBlockExpr"
 let key_on_type = EvalHash.hash "onType"
+let key_on_after_type = EvalHash.hash "onAfterType"
 let key_on_type_decl = EvalHash.hash "onTypeDeclaration"
 let key_on_class_field = EvalHash.hash "onClassField"
 let key_token_transmuter = EvalHash.hash "tokenTransmuter"
@@ -194,6 +211,7 @@ let setup_macro_functions =
 				on_block         = decode_callback decode_on_block_start_callback key_on_block_start;
 				on_block_next    = decode_callback decode_on_block_expr_callback key_on_block_expr;
 				on_type          = decode_callback decode_on_type_callback key_on_type;
+				on_after_type    = decode_callback decode_on_after_type_callback key_on_after_type;
 				on_type_decl     = decode_callback decode_on_type_decl_callback key_on_type_decl;
 				on_class_field   = decode_callback decode_on_class_field_callback key_on_class_field;
 				token_transmuter = decode_callback decode_token_transmuter_callback key_token_transmuter;
