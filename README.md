@@ -150,7 +150,7 @@ trace(2 ** 3); // 8
 ```
 
 ## Trailing Lambda
-This mod adds the Kotlin feature for adding a trailing block to an expression to act as a final-argument lambda.
+This mod adds the [Kotlin feature](https://kotlinlang.org/docs/lambdas.html#passing-trailing-lambdas) for adding a trailing block to an expression to act as a final-argument lambda.
 ```haxe
 function add(num: Int, mod: (Int) -> Int) {
     return mod(num) * 2;
