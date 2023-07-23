@@ -31,10 +31,13 @@ typedef TokenStream = {
 	function parsePostExpr(e: Expr): Expr;
 
 	/**
+		Parse and return the next complex type.
 	**/
 	function nextType(): { type: ComplexType, pos: Position };
 
 	/**
+		Parses the content after an type.
+		This is stuff like the end of a function type (->) or the & op.
 	**/
 	function parsePostType(t: { type: ComplexType, pos: Position }): { type: ComplexType, pos: Position };
 
