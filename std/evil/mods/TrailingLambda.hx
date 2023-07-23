@@ -32,9 +32,17 @@ function init() {
 	```
 **/
 function onAfterExpr(stream: evil.macro.TokenStream, expr: Expr): Null<Expr> {
-	// Trailing block syntax is incompatible with switch statement expressions.
+	// Trailing lambda syntax is incompatible with switch statement expressions.
 	if(stream.isParsingSwitchExpr()) {
 		return null;
+	}
+
+	// Trailing lambda syntax is incompatible with macro reification expressions.
+	switch(expr.expr) {
+		case EConst(CIdent(c)) if(StringTools.startsWith(c, "$")): {
+			return null;
+		}
+		case _:
 	}
 
 	final firstToken = stream.peek();
