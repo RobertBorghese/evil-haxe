@@ -914,7 +914,7 @@ and parse_enum_param = parser
 and parse_function_field doc meta al = parser
 	| [< '(Kwd Function,p1); name = parse_fun_name; pl = parse_constraint_params; '(POpen,_); args = psep_trailing Comma parse_fun_param; '(PClose,_); t = popt parse_type_hint; s >] ->
 		let e, p2 = (match s with parser
-			| [< e = expr; s >] ->
+			| [< e = (*EVIL HAXE change *) function_expr expr; s >] ->
 				ignore(semicolon s);
 				Some e, pos e
 			| [< p = semicolon >] -> None, p
