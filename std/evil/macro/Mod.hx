@@ -15,6 +15,7 @@ typedef Mod = {
 	?onFunctionExpr: (TokenStream) -> Null<Expr>,
 	?onBlockExpr: (TokenStream) -> Void,
 	?onAfterBlockExpr: (TokenStream, Expr) -> Null<Expr>,
+	?onType: (TokenStream) -> Null<{ type: ComplexType, pos: Position }>,
 	?onTypeDeclaration: (TokenStream, evil.macro.TypeDeclCompletionMode) -> Null<TypeDefinition>,
 	?onClassField: (TokenStream, Bool) -> Null<Field>,
 	?tokenTransmuter: (TokenType) -> Null<TokenType>

@@ -657,7 +657,13 @@ and parse_type_opt = parser
 	| [< t = parse_type_hint >] -> Some t
 	| [< >] -> None
 
-and parse_complex_type s = parse_complex_type_maybe_named false s
+(* EVIL HAXE change *)
+and parse_complex_type s =
+	match (EvilParser.call_hooks EvilParser.hooks.on_type (s)) with
+	| Some hook_ct -> hook_ct
+	| None -> parse_complex_type' s
+
+and parse_complex_type' s = parse_complex_type_maybe_named false s
 
 and parse_complex_type_maybe_named allow_named = parser
 	| [< '(POpen,p1); tl = psep_trailing Comma (parse_complex_type_maybe_named true); '(PClose,p2); s >] ->

@@ -39,6 +39,7 @@ let clear_hooks () =
 		hooks.on_function_expr <- [];
 		hooks.on_block <- [];
 		hooks.on_block_next <- [];
+		hooks.on_type <- [];
 		hooks.on_type_decl <- [];
 		hooks.on_class_field <- [];
 		hooks.token_transmuter <- [];
