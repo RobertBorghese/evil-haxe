@@ -149,6 +149,16 @@ This mod adds the `**` (exponentiation) operator from JavaScript/Python. For exa
 trace(2 ** 3); // 8
 ```
 
+## Trailing Lambda
+This mod adds the Kotlin feature for adding a trailing block to an expression to act as a final-argument lambda.
+```haxe
+function add(num: Int, mod: (Int) -> Int) {
+    return mod(num) * 2;
+}
+
+add(10) { n -> n * 2; } // 40
+```
+
 ## Pipe
 This mod enables the pipe operator similar to what's seen in many functional languages:
 ```haxe
@@ -169,6 +179,13 @@ Deferred expressions are moved to the end of their block scope.
 // Hello world
 defer trace("world");
 trace("Hello");
+```
+
+## Shorthand Nullable
+This mod adds a shorthand for writing `Null<T>` types as `T?`.
+```haxe
+final num: Int? = 123;
+trace(num ?? 321);
 ```
 
 ## Kotlin Keywords
