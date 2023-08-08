@@ -1627,14 +1627,15 @@ and expr' = parser
 
 (* EVIL HAXE change *)
 and expr_next e1 s =
-	try
-		let hook_result = EvilParser.call_hooks EvilParser.hooks.on_expr_next (s, e1) in
-		match hook_result with
-		| Some e -> e
-		| None -> expr_next' e1 s
-	with Stream.Error msg when !in_display ->
-		handle_stream_error msg s;
-		e1
+	match (EvilParser.call_hooks EvilParser.hooks.on_expr_next (s, e1)) with
+	| Some e -> e
+	| None -> (
+		try
+			expr_next' e1 s
+		with Stream.Error msg when !in_display ->
+			handle_stream_error msg s;
+			e1
+	)
 
 and expr_next' e1 = parser
 	| [< '(BrOpen,p1) when is_dollar_ident e1; eparam = expr; '(BrClose,p2); s >] ->

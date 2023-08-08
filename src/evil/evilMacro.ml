@@ -17,13 +17,12 @@ let add_macro_function name func =
 	Converts a Haxe callback into an OnExpr hook-callable function.
 **)
 let decode_on_expr_callback (hx_callback: EvalValue.value) = (
-	let hxf = EvalMisc.prepare_callback hx_callback 1 in
+	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun ((token_stream: EvilParser.token_stream), (top_level: bool)) ->
-		let ctx = EvalContext.get_ctx() in
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
 		let hx_expr = hxf [hx_stream; vbool top_level] in
 		if hx_expr = vnull then None
-		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+		else Some (Interp.decode_expr hx_expr)
 	)
 )
 
@@ -33,12 +32,11 @@ let decode_on_expr_callback (hx_callback: EvalValue.value) = (
 let decode_on_after_expr_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (expr: Ast.expr)) ->
-		let ctx = EvalContext.get_ctx() in
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
-		let expr_arg = ctx.curapi.MacroApi.encode_expr expr in
+		let expr_arg = Interp.encode_expr expr in
 		let hx_expr = hxf [hx_stream; expr_arg] in
 		if hx_expr = vnull then None
-		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+		else Some (Interp.decode_expr hx_expr)
 	)
 )
 
@@ -48,11 +46,10 @@ let decode_on_after_expr_callback hx_callback = (
 let decode_on_function_expr_callback (hx_callback: EvalValue.value) = (
 	let hxf = EvalMisc.prepare_callback hx_callback 1 in
 	(fun (token_stream: EvilParser.token_stream) ->
-		let ctx = EvalContext.get_ctx() in
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
 		let hx_expr = hxf [hx_stream] in
 		if hx_expr = vnull then None
-		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+		else Some (Interp.decode_expr hx_expr)
 	)
 )
 
@@ -73,12 +70,11 @@ let decode_on_block_start_callback hx_callback = (
 let decode_on_block_expr_callback hx_callback = (
 	let hxf = EvalMisc.prepare_callback hx_callback 2 in
 	(fun (token_stream, (expr: Ast.expr)) ->
-		let ctx = EvalContext.get_ctx() in
 		let hx_stream = EvilTokenStream.make_token_stream_for_haxe token_stream in
-		let expr_arg = ctx.curapi.MacroApi.encode_expr expr in
+		let expr_arg = Interp.encode_expr expr in
 		let hx_expr = hxf [hx_stream; expr_arg] in
 		if hx_expr = vnull then None
-		else Some (ctx.curapi.MacroApi.decode_expr hx_expr)
+		else Some (Interp.decode_expr hx_expr)
 	)
 )
 
