@@ -1154,7 +1154,7 @@ let interp ctx f args =
 			(match get r2, get off with
 			| VRef (RArray (a,pos),t), VInt i -> set r (VRef (RArray (a,pos + Int32.to_int i),t))
 			| _ -> Globals.die "" __LOC__)
-		| ONop _ ->
+		| ONop _ | OPrefetch _ ->
 			()
 		);
 		loop()
@@ -2436,7 +2436,7 @@ let check code macros =
 			| ORethrow r ->
 				reg r HDyn
 			| OGetArray (v,a,i) ->
-				reg a HArray;
+				(match rtype a with HAbstract ("hl_carray",_) -> () | _ -> reg a HArray);
 				reg i HI32;
 				ignore(rtype v);
 			| OGetUI8 (r,b,p) | OGetUI16(r,b,p) ->
@@ -2466,7 +2466,7 @@ let check code macros =
 				ignore(rtype a);
 				ignore(rtype b);
 			| OArraySize (r,a) ->
-				reg a HArray;
+				(match rtype a with HAbstract ("hl_carray",_) -> () | _ -> reg a HArray);
 				reg r HI32
 			| OType (r,_) ->
 				reg r HType
@@ -2547,6 +2547,8 @@ let check code macros =
 				reg off HI32;
 			| ONop _ ->
 				();
+			| OPrefetch (r,f,_) ->
+				if f = 0 then ignore(rtype r) else ignore(tfield r (f - 1) false)
 		) f.code
 		(* TODO : check that all path correctly initialize NULL values and reach a return *)
 	in
