@@ -25,6 +25,7 @@ class Evil {
 		evil.mods.TrailingLambda.init(); // trailing lambda
 		evil.mods.ShorthandNull.init(); // Type?
 		evil.mods.ShorthandArray.init(); // Type[]
+		evil.mods.Modify.init(); // modify Type {}
 	}
 
 	/**

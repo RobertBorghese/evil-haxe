@@ -76,7 +76,7 @@ let parse_args com =
 		),"<mod1,mod2,...>","set the Evil Haxe mods used by default");
 		("Evil",["--conspire"],[],Arg.String (fun hxpath ->
 			EvilArgs.add_conspire hxpath;
-		),"<mod1,mod2,...>","run function to register mods");
+		),"<Cls.call()>","run function to register mods");
 
 		("Target",["--js"],["-js"],Arg.String (set_platform com Js),"<file>","generate JavaScript code into target file");
 		("Target",["--lua"],["-lua"],Arg.String (set_platform com Lua),"<file>","generate Lua code into target file");
