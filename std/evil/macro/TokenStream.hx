@@ -42,6 +42,15 @@ typedef TokenStream = {
 	function parsePostType(t: { type: ComplexType, pos: Position }): { type: ComplexType, pos: Position };
 
 	/**
+		Parses an indefinite number of class fields.
+		This is usually called after consuming the "{" for a type declaration.
+
+		`keywordPos` is the `Position` of the type declaration keyword token
+		like "class" or "enum".
+	**/
+	function parseClassFields(keywordPos: Position): { fields: Array<Field>, pos: Position };
+
+	/**
 		Consume the next semicolon.
 		Throws an error if it doesn't exist, UNLESS the previous token was `}`.
 	**/

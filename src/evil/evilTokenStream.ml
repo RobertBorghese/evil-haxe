@@ -40,6 +40,13 @@ let make_token_stream_for_haxe (token_stream: EvilParser.token_stream) =
 			let type_hint = Grammar.parse_complex_type_next type_hint token_stream in
 			EvilEncode.encode_ctype_and_pos type_hint
 		);
+		"parseClassFields", vfun1 (fun kwd_pos ->
+			let fields, fields_pos = Grammar.parse_class_fields false (Interp.decode_pos kwd_pos) token_stream in
+			Interp.encode_obj [
+				"fields", encode_array (List.map Interp.encode_field fields);
+				"pos", Interp.encode_pos fields_pos
+			]
+		);
 		"semicolon", vfun0 (fun () ->
 			Interp.encode_pos (Grammar.semicolon token_stream)
 		);
