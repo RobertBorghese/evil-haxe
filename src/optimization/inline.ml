@@ -6,10 +6,6 @@ open Common
 open Typecore
 open Error
 
-let needs_inline ctx is_extern_class cf =
-	cf.cf_kind = Method MethInline && ctx.allow_inline
-	&& (ctx.g.doinline || is_extern_class || has_class_field_flag cf CfExtern)
-
 let mk_untyped_call name p params =
 	{
 		eexpr = TCall({ eexpr = TIdent name; etype = t_dynamic; epos = p }, params);
@@ -510,14 +506,14 @@ class inline_state ctx ethis params cf f p = object(self)
 						| VIInline ->
 							begin match e'.eexpr with
 								(* If we inline a function expression, we have to duplicate its locals. *)
-								| TFunction _ -> Texpr.duplicate_tvars e'
+								| TFunction _ -> Texpr.duplicate_tvars e_identity e'
 								| TCast(e1,None) when in_assignment -> e1
 								| _ -> e'
 							end
 						| VIInlineIfCalled when in_call ->
 							(* We allow inlining function expressions into call-places. However, we have to substitute
 							   their locals to avoid duplicate declarations. *)
-							Texpr.duplicate_tvars e'
+							Texpr.duplicate_tvars e_identity e'
 						| _ -> e
 					end
 				with Not_found ->

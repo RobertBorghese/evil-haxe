@@ -474,9 +474,9 @@ and flush_macro_context mint ctx =
 	mctx.com.Common.modules <- modules;
 	(* we should maybe ensure that all filters in Main are applied. Not urgent atm *)
 	let expr_filters = [
+		"handle_abstract_casts",AbstractCast.handle_abstract_casts mctx;
 		"local_statics",Filters.LocalStatic.run mctx;
 		"VarLazifier",VarLazifier.apply mctx.com;
-		"handle_abstract_casts",AbstractCast.handle_abstract_casts mctx;
 		"Exceptions",Exceptions.filter mctx;
 		"captured_vars",CapturedVars.captured_vars mctx.com;
 	] in
@@ -885,7 +885,7 @@ let setup() =
 
 let type_stored_expr ctx e1 =
 	let id = match e1 with (EConst (Int (s, _)),_) -> int_of_string s | _ -> die "" __LOC__ in
-	get_stored_typed_expr ctx.com id
+	TyperBase.get_stored_typed_expr ctx id
 
 ;;
 load_macro_ref := load_macro;

@@ -330,8 +330,9 @@ let rec type_ident_raise ctx i p mode with_type =
 				let t = match with_type with
 					| WithType.WithType(t,_) ->
 						begin match follow t with
-						| TMono r ->
-							(* If our expected type is a monomorph, bind it to Null<?>. *)
+						| TMono r when not (is_nullable t) ->
+							(* If our expected type is a monomorph, bind it to Null<?>. The is_nullable check is here because
+							   the expected type could already be Null<?>, in which case we don't want to double-wrap (issue #11286). *)
 							Monomorph.do_bind r (tnull())
 						| _ ->
 							(* Otherwise there's no need to create a monomorph, we can just type the null literal
@@ -1891,19 +1892,24 @@ and type_expr ?(mode=MGet) ctx (e,p) (with_type:WithType.t) =
 		let vr = new value_reference ctx in
 		let e1 = type_expr ctx (Expr.ensure_block e1) with_type in
 		let e2 = type_expr ctx (Expr.ensure_block e2) (WithType.with_type e1.etype) in
-		let e1 = vr#as_var "tmp" {e1 with etype = ctx.t.tnull e1.etype} in
+		let tmin = unify_min ctx [e1; e2] in
+		let e1 = vr#as_var "tmp" {e1 with etype = ctx.t.tnull tmin} in
 		let e_null = Builder.make_null e1.etype e1.epos in
 		let e_cond = mk (TBinop(OpNotEq,e1,e_null)) ctx.t.tbool e1.epos in
 
-		let follow_null_once t =
+		let rec follow_null t =
 			match t with
-			| TAbstract({a_path = [],"Null"},[t]) -> t
+			| TAbstract({a_path = [],"Null"},[t]) -> follow_null t
 			| _ -> t
 		in
 		let iftype = if DeadEnd.has_dead_end e2 then
-			WithType.with_type (follow_null_once e1.etype)
+			WithType.with_type (follow_null e1.etype)
 		else
-			WithType.WithType(e2.etype,None)
+			let t = match e2.etype with
+				| TAbstract({a_path = [],"Null"},[t]) -> tmin
+				| _ -> follow_null tmin
+			in
+			WithType.with_type t
 		in
 		let e_if = make_if_then_else ctx e_cond e1 e2 iftype p in
 		vr#to_texpr e_if

@@ -1461,7 +1461,7 @@ module TexprConverter = struct
 		in
 		let s = match unmatched with
 			| [] -> "_"
-			| _ -> String.concat " | " (List.sort Pervasives.compare sl)
+			| _ -> String.concat " | " (List.sort Stdlib.compare sl)
 		in
 		typing_error (Printf.sprintf "Unmatched patterns: %s" (s_subject v_lookup s e_subject)) e_subject.epos
 
@@ -1662,7 +1662,7 @@ module TexprConverter = struct
 		| None ->
 			typing_error "Unmatched patterns: _" p;
 		| Some e ->
-			Texpr.duplicate_tvars e
+			Texpr.duplicate_tvars e_identity e
 end
 
 module Match = struct
